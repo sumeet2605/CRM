@@ -219,5 +219,3 @@ def post_lead_created_signal(sender, instance, created, **kwargs):
         
 
 post_save.connect(post_user_created_signal, sender=User)
-
-post_save.connect(post_lead_created_signal, sender=Lead)

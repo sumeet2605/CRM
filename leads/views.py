@@ -53,23 +53,40 @@ class DashboardView(OraganiserAndLoginRequiredMixin, generic.TemplateView):
         user = self.request.user
 
         # How many leads we have in total
-        total_lead_count = Lead.objects.filter(oraganisation=user.userprofile).count()
+        if user.is_admin:
+            total_lead_count = Lead.objects.all().count()
 
-        # How many new leads in the last 30 days
-        thirty_days_ago = datetime.date.today() - datetime.timedelta(days=30)
+            # How many new leads in the last 30 days
+            thirty_days_ago = datetime.date.today() - datetime.timedelta(days=30)
 
-        total_in_past30 = Lead.objects.filter(
-            oraganisation=user.userprofile,
-            Created_at__gte=thirty_days_ago
-        ).count()
+            total_in_past30 = Lead.objects.filter(
+                Created_at__gte=thirty_days_ago
+            ).count()
 
-        # How many converted leads in the last 30 days
-        converted_category = Category.objects.get(name="Converted")
-        converted_in_past30 = Lead.objects.filter(
-            oraganisation=user.userprofile,
-            category=converted_category,
-            converted_date__gte=thirty_days_ago
-        ).count()
+            # How many converted leads in the last 30 days
+            converted_category = Category.objects.get(name="Converted")
+            converted_in_past30 = Lead.objects.filter(
+                category=converted_category,
+                converted_date__gte=thirty_days_ago
+            ).count()    
+        else:    
+            total_lead_count = Lead.objects.filter(oraganisation=user.userprofile).count()
+
+            # How many new leads in the last 30 days
+            thirty_days_ago = datetime.date.today() - datetime.timedelta(days=30)
+
+            total_in_past30 = Lead.objects.filter(
+                oraganisation=user.userprofile,
+                Created_at__gte=thirty_days_ago
+            ).count()
+
+            # How many converted leads in the last 30 days
+            converted_category = Category.objects.get(name="Converted")
+            converted_in_past30 = Lead.objects.filter(
+                oraganisation=user.userprofile,
+                category=converted_category,
+                converted_date__gte=thirty_days_ago
+            ).count()
 
         context.update({
             "total_lead_count": total_lead_count,
@@ -86,16 +103,18 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         user = self.request.user
-        print(user.agent.oraganisation)
-        if user.is_organiser:
+        if user.is_admin:
+            queryset = Lead.objects.all().order_by('agent')
+        elif user.is_organiser:
             queryset = Lead.objects.filter(
                 oraganisation=user.userprofile,
-            )
+                agent__isnull=False
+            ).order_by('created_at')
         else:
             queryset = Lead.objects.filter(
-                oraganisation=user.agent.oraganisation,
+                agent__isnull=False
             )
-            queryset = queryset.filter(agent__user=user)
+            queryset = queryset.filter(agent__user=user).order_by('created_at')
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -105,7 +124,7 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
             queryset = Lead.objects.filter(
                 oraganisation=user.userprofile,
                 agent__isnull=True
-            )
+            ).order_by('created_at')
             context.update({
                 "unassigned_leads":queryset
             })
@@ -118,11 +137,12 @@ class LeadDetailView(LoginRequiredMixin, generic.DetailView):
 
     def get_queryset(self):
         user = self.request.user
-        perm = user.usertype
-        if user.is_organiser:
+        if user.is_admin:
+            queryset = Lead.objects.all()
+        elif user.is_organiser:
             queryset = Lead.objects.filter(oraganisation=user.userprofile)
         else:
-            queryset = Lead.objects.filter(oraganisation=user.agent.oraganisation)
+            queryset = Lead.objects.all()
             queryset = queryset.filter(agent__user=user)
         return queryset
 
@@ -148,11 +168,13 @@ class LeadUpdateView(LoginRequiredMixin, generic.UpdateView):
     
     def get_queryset(self):
         user = self.request.user
-        if user.is_organiser:
+        if user.is_admin:
+            queryset = Lead.objects.all()
+        elif user.is_organiser:
             queryset = Lead.objects.filter(oraganisation=user.userprofile)
         else:
-            queryset = Lead.objects.filter(oraganisation=user.agent.oraganisation)
-            queryset = queryset.filter(agent__user=self.request.user)
+            queryset = Lead.objects.all()
+            queryset = queryset.filter(agent__user=user)
         return queryset
 
     def get_success_url(self):
@@ -168,7 +190,9 @@ class LeadDeleteView(OraganiserAndLoginRequiredMixin, generic.DeleteView):
     
     def get_queryset(self):
         user = self.request.user
-        if user.is_organiser:
+        if user.is_admin:
+            queryset = Lead.objects.all()
+        elif user.is_organiser:
             queryset = Lead.objects.filter(oraganisation=user.userprofile)
        
         return queryset
@@ -206,7 +230,9 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
         context = super(CategoryListView, self).get_context_data(**kwargs)
         user = self.request.user
 
-        if user.is_organiser:
+        if user.is_admin:
+            queryset = Lead.objects.all()
+        elif user.is_organiser:
             queryset = Lead.objects.filter(
                 oraganisation=user.userprofile
             )
@@ -224,7 +250,9 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         user = self.request.user
         # initial queryset of leads for the entire organisation
-        if user.is_organiser:
+        if user.is_admin:
+            queryset = Category.objects.all()
+        elif user.is_organiser:
             queryset = Category.objects.filter(
                 organisation=user.userprofile
             )
@@ -242,7 +270,9 @@ class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
     def get_queryset(self):
         user = self.request.user
         # initial queryset of leads for the entire organisation
-        if user.is_organiser:
+        if user.is_admin:
+            queryset = Category.objects.all()
+        elif user.is_organiser:
             queryset = Category.objects.filter(
                 organisation=user.userprofile
             )
@@ -277,7 +307,9 @@ class CategoryUpdateView(OraganiserAndLoginRequiredMixin, generic.UpdateView):
     def get_queryset(self):
         user = self.request.user
         # initial queryset of leads for the entire organisation
-        if user.is_organiser:
+        if user.is_admin:
+            queryset = Lead.objects.all()
+        elif user.is_organiser:
             queryset = Category.objects.filter(
                 organisation=user.userprofile
             )
@@ -297,7 +329,9 @@ class CategoryDeleteView(OraganiserAndLoginRequiredMixin, generic.DeleteView):
     def get_queryset(self):
         user = self.request.user
         # initial queryset of leads for the entire organisation
-        if user.is_organiser:
+        if user.is_admin:
+            queryset = Lead.objects.all()
+        elif user.is_organiser:
             queryset = Category.objects.filter(
                 organisation=user.userprofile
             )
@@ -315,7 +349,9 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
     def get_queryset(self):
         user = self.request.user
         # initial queryset of leads for the entire organisation
-        if user.is_organiser:
+        if user.is_admin:
+            queryset = Lead.objects.all()
+        elif user.is_organiser:
             queryset = Lead.objects.filter(oraganisation=user.userprofile)
         else:
             queryset = Lead.objects.filter(oraganisation=user.agent.oraganisation)
@@ -335,6 +371,34 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
             if lead_before_update.category != converted_category:
                 # this lead has now been converted
                 instance.converted_date = datetime.datetime.now()
+                if Sale.objects.filter(lead=instance).exists():
+                    pass
+                else:  
+                    Sale.objects.create(
+                        lead=instance,
+                        First_Name=instance.First_Name,
+                        Last_Name=instance.Last_Name,
+                        Phone_Number=instance.Phone_Number,
+                        Fater_Name="",
+                        Mother_Name="",
+                        Date_of_Birth=date.today(),
+                        PAN_Number="",
+                        Company_Name="",
+                        Designation="",
+                        Office_Address="",
+                        Current_Residence_Address="",
+                        Permanent_Residence_Address="",
+                        Personal_Email="",
+                        Alternate_Phone_Number="",
+                        Official_Email="",
+                        Bank_Name=instance.Bank_Name,
+                        Remarks="",
+                        oraganisation=instance.oraganisation,
+                        agent=instance.agent,
+                        category=Category.objects.get(id=1),
+                        description = "",
+                        converted_date=datetime.now(),
+                    )
         instance.save()
         return super(LeadCategoryUpdateView, self).form_valid(form)
 
