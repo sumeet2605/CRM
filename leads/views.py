@@ -1,4 +1,5 @@
 import logging
+from django.utils import timezone
 import datetime
 from django import contrib
 from django.contrib import messages
@@ -85,15 +86,14 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         user = self.request.user
+        print(user.agent.oraganisation)
         if user.is_organiser:
             queryset = Lead.objects.filter(
                 oraganisation=user.userprofile,
-                agent__isnull=False
             )
         else:
             queryset = Lead.objects.filter(
-                oraganisation=user.agent.oraganisation, 
-                agent__isnull=False
+                oraganisation=user.agent.oraganisation,
             )
             queryset = queryset.filter(agent__user=user)
         return queryset
@@ -118,11 +118,12 @@ class LeadDetailView(LoginRequiredMixin, generic.DetailView):
 
     def get_queryset(self):
         user = self.request.user
+        perm = user.usertype
         if user.is_organiser:
             queryset = Lead.objects.filter(oraganisation=user.userprofile)
         else:
             queryset = Lead.objects.filter(oraganisation=user.agent.oraganisation)
-            queryset = queryset.filter(agent__user=self.request.user)
+            queryset = queryset.filter(agent__user=user)
         return queryset
 
 class LeadCreateView(LoginRequiredMixin, generic.CreateView):

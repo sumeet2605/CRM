@@ -13,8 +13,11 @@ class AgentListView(OraganiserAndLoginRequiredMixin, generic.ListView):
     context_object_name = "agents"
     
     def get_queryset(self):
-        organisation = self.request.user.userprofile
-        return Agent.objects.filter(oraganisation=organisation)
+        if self.request.user.is_admin:
+            return Agent.objects.all()
+        else:    
+            organisation = self.request.user.userprofile
+            return Agent.objects.filter(oraganisation=organisation)
 
     
 class AgentDetailView(OraganiserAndLoginRequiredMixin, generic.DetailView):
@@ -23,8 +26,11 @@ class AgentDetailView(OraganiserAndLoginRequiredMixin, generic.DetailView):
     context_object_name = "agent"
 
     def get_queryset(self):
-        organisation = self.request.user.userprofile
-        return Agent.objects.filter(oraganisation=organisation)
+        if self.request.user.is_admin:
+            return Agent.objects.all()
+        else:
+            organisation = self.request.user.userprofile
+            return Agent.objects.filter(oraganisation=organisation)
 
 
 class AgentCreateView(OraganiserAndLoginRequiredMixin, generic.CreateView):
@@ -35,6 +41,7 @@ class AgentCreateView(OraganiserAndLoginRequiredMixin, generic.CreateView):
         user = form.save(commit=False)
         user.is_agent = True
         user.is_organiser = False
+        user.is_admin = False
         user.set_password(f"{random.randint(0, 10000000)}")
         user.save()
         Agent.objects.create(
@@ -58,8 +65,11 @@ class AgentUpdateView(OraganiserAndLoginRequiredMixin, generic.UpdateView):
     form_class = AgentModelForm
 
     def get_queryset(self):
-        organisation = self.request.user.userprofile
-        return Agent.objects.filter(oraganisation=organisation)
+        if self.request.user.is_admin:
+            return Agent.objects.all()
+        else:
+            organisation = self.request.user.userprofile
+            return Agent.objects.filter(oraganisation=organisation)
 
     def get_success_url(self):
         return reverse("agents:agent-list")    
@@ -79,5 +89,8 @@ class AgentDeleteView(OraganiserAndLoginRequiredMixin, generic.DeleteView):
         return reverse("agnets:agent-list")
 
     def get_queryset(self):
-        organisation = self.request.user.userprofile
-        return Agent.objects.filter(oraganisation=organisation)
+        if self.request.user.is_admin:
+            return Agent.objects.all()
+        else:
+            organisation = self.request.user.userprofile
+            return Agent.objects.filter(oraganisation=organisation)

@@ -24,6 +24,7 @@ class UserType(models.Model):
 class User(AbstractUser):
     is_organiser = models.BooleanField(default=True)
     is_agent = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
     department = models.ForeignKey("Department", related_name="user", null=True, on_delete=models.SET_NULL)
     user_type = models.ForeignKey("UserType", null=True, on_delete=models.SET_NULL)
     user_role = models.CharField(max_length=20, null=True, choices=(
