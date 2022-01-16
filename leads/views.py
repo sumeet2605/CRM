@@ -109,12 +109,12 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
             queryset = Lead.objects.filter(
                 oraganisation=user.userprofile,
                 agent__isnull=False
-            ).order_by('created_at')
+            ).order_by('Created_at')
         else:
             queryset = Lead.objects.filter(
                 agent__isnull=False
             )
-            queryset = queryset.filter(agent__user=user).order_by('created_at')
+            queryset = queryset.filter(agent__user=user).order_by('Created_at')
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -124,7 +124,7 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
             queryset = Lead.objects.filter(
                 oraganisation=user.userprofile,
                 agent__isnull=True
-            ).order_by('created_at')
+            ).order_by('Created_at')
             context.update({
                 "unassigned_leads":queryset
             })
@@ -371,14 +371,14 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
             if lead_before_update.category != converted_category:
                 # this lead has now been converted
                 instance.converted_date = datetime.datetime.now()
-                if Sale.objects.filter(lead=instance).exists():
+                if Sale.objects.filter(lead=lead_before_update).exists():
                     pass
                 else:  
                     Sale.objects.create(
-                        lead=instance,
-                        First_Name=instance.First_Name,
-                        Last_Name=instance.Last_Name,
-                        Phone_Number=instance.Phone_Number,
+                        lead=lead_before_update,
+                        First_Name=lead_before_update.First_Name,
+                        Last_Name=lead_before_update.Last_Name,
+                        Phone_Number=lead_before_update.Phone_Number,
                         Fater_Name="",
                         Mother_Name="",
                         Date_of_Birth=date.today(),
@@ -432,7 +432,9 @@ class FollowUpUpdateView(LoginRequiredMixin, generic.UpdateView):
     def get_queryset(self):
         user = self.request.user
         # initial queryset of leads for the entire organisation
-        if user.is_organiser:
+        if user.is_admin:
+            queryset = FollowUp.objects.all()
+        elif user.is_organiser:
             queryset = FollowUp.objects.filter(lead__oraganisation=user.userprofile)
         else:
             queryset = FollowUp.objects.filter(lead__oraganisation=user.agent.oraganisation)
@@ -454,7 +456,9 @@ class FollowUpDeleteView(OraganiserAndLoginRequiredMixin, generic.DeleteView):
     def get_queryset(self):
         user = self.request.user
         # initial queryset of leads for the entire organisation
-        if user.is_organiser:
+        if user.is_admin:
+            queryset = FollowUp.objects.all()
+        elif user.is_organiser:
             queryset = FollowUp.objects.filter(lead__oraganisation=user.userprofile)
         else:
             queryset = FollowUp.objects.filter(lead__oraganisation=user.agent.oraganisation)
@@ -469,7 +473,10 @@ class SaleListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_organiser:
+        
+        if user.is_admin:
+            queryset = Sale.objects.all()
+        elif user.is_organiser:
             queryset = Sale.objects.filter(
                 oraganisation=user.userprofile,
                 agent__isnull=False
@@ -485,7 +492,9 @@ class SaleListView(LoginRequiredMixin, generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(LeadListView, self).get_context_data(**kwargs)
         user = self.request.user
-        if user.is_organiser:
+        if user.is_admin:
+            queryset = Sale.objects.all()
+        elif user.is_organiser:
             queryset = Sale.objects.filter(
                 oraganisation=user.userprofile,
                 agent__isnull=True
@@ -502,7 +511,9 @@ class SaleDetailView(LoginRequiredMixin, generic.DetailView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_organiser:
+        if user.is_admin:
+            queryset = Sale.objects.all()
+        elif user.is_organiser:
             queryset = Sale.objects.filter(oraganisation=user.userprofile)
         else:
             queryset = Sale.objects.filter(oraganisation=user.agent.oraganisation)
@@ -516,7 +527,10 @@ class SaleUpdateView(LoginRequiredMixin, generic.UpdateView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_organiser:
+        
+        if user.is_admin:
+            queryset = Sale.objects.all()
+        elif user.is_organiser:
             queryset = Sale.objects.filter(oraganisation=user.userprofile)
         else:
             queryset = Sale.objects.filter(oraganisation=user.agent.oraganisation)
