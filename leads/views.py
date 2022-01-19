@@ -355,7 +355,6 @@ class CategoryCreateView(OraganiserAndLoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         category = form.save(commit=False)
-        category.organisation = self.request.user.userprofile
         category.save()
         return super(CategoryCreateView, self).form_valid(form)
 
@@ -371,14 +370,14 @@ class CategoryUpdateView(OraganiserAndLoginRequiredMixin, generic.UpdateView):
         user = self.request.user
         # initial queryset of leads for the entire organisation
         if user.is_admin:
-            queryset = Lead.objects.all()
+            queryset = Category.objects.all()
         elif user.is_organiser:
             queryset = Category.objects.filter(
-                organisation=user.userprofile
+                organisation="Lead"
             )
         else:
             queryset = Category.objects.filter(
-                organisation=user.agent.oraganisation
+                organisation="Lead"
             )
         return queryset
 
@@ -396,11 +395,11 @@ class CategoryDeleteView(OraganiserAndLoginRequiredMixin, generic.DeleteView):
             queryset = Lead.objects.all()
         elif user.is_organiser:
             queryset = Category.objects.filter(
-                organisation=user.userprofile
+                organisation="Lead"
             )
         else:
             queryset = Category.objects.filter(
-                organisation=user.agent.oraganisation
+                organisation="Lead"
             )
         return queryset
 
@@ -414,15 +413,13 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
         # initial queryset of leads for the entire organisation
         if user.is_admin:
             queryset = Lead.objects.all()
-        elif user.is_organiser:
-            queryset = Lead.objects.filter(oraganisation=user.userprofile)
+        elif user.is_organisor:
+            queryset = Lead.objects.filter(organisation=user.userprofile)
         else:
-            queryset = Lead.objects.filter(oraganisation=user.agent.oraganisation)
+            queryset = Lead.objects.all()
             # filter for the agent that is logged in
             queryset = queryset.filter(agent__user=user)
         return queryset
-
-    
 
     def get_success_url(self):
         return reverse("leads:lead-detail", kwargs={"pk": self.get_object().id})
