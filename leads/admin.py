@@ -17,8 +17,10 @@ class LeadAdmin(admin.ModelAdmin):
     search_fields = ['First_Name', 'Last_Name']
 
 
+class CategoryAdmin(admin.ModelAdmin):
+        list_display = ['name', 'organisation']
 
-admin.site.register(Category)
+admin.site.register(Category, CategoryAdmin)
 admin.site.register(User)
 admin.site.register(UserType)
 admin.site.register(Sale)

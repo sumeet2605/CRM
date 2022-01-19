@@ -80,8 +80,7 @@ class Lead(models.Model):
     )
 
     APPLICACTIONTYPE = (('C2C', 'Card 2 Card'),('Salary', 'Salaried'),('ITR', 'ITR'),)
-    STATUS = (('Lead', 'Lead'),('Sale', 'Sale'),('Sent to Bank', 'Sent to Bank'),('In Progress Backend', 'In Progress Backend'),('Login Completed', 'Login Completed'), ('Bank Return', 'Bank Return'),('In Progress Bank', 'In Progress Bank'),('Pending' ,'Pending'),('Documentation', 'Documentation'),('Card Out', 'Card Out'),('Declined', 'Declined'),)
-
+    
     Source = models.CharField(max_length=15, choices=SOURCE)
     Product = models.CharField(max_length=20, choices=PRODUCT)
     First_Name = models.CharField(max_length=20, null=True, blank=True)
@@ -90,7 +89,6 @@ class Lead(models.Model):
     Call_Status = models.CharField(max_length=30, choices=CALLSTATUS, null=True, blank=True)
     Bank_Name = models.CharField(max_length=20, null=True, choices=BANKNAME, blank=True)
     Application_Type = models.CharField(max_length=30, null=True, choices=APPLICACTIONTYPE, blank=True)
-    Status = models.CharField(max_length=40, null=True, choices=STATUS, blank=True)
     Remarks = models.CharField(null = True, max_length = 40, blank=True)
     Created_at = models.DateTimeField(auto_now_add=True)
     Last_Upated = models.DateTimeField(auto_now=True)
@@ -114,15 +112,15 @@ class FollowUp(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     notes = models.TextField(blank=True, null=True)
     follow_up_date = models.DateTimeField()
-    file = models.FileField(null=True, blank=True, upload_to=handle_upload_follow_ups)
 
     def __str__(self):
         return f"{self.lead.first_name} {self.lead.last_name}"
 
 
 class Category(models.Model):
+    APPNAME = (('Lead', 'Lead'),('Sale', 'Sale'))
     name = models.CharField(max_length=30)  # New, Contacted, Converted, Unconverted
-    organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    organisation = models.CharField(max_length=20, null=True, choices=APPNAME, blank=True)
 
     def __str__(self):
         return self.name
@@ -219,3 +217,4 @@ def post_lead_created_signal(sender, instance, created, **kwargs):
         
 
 post_save.connect(post_user_created_signal, sender=User)
+post_save.connect(post_lead_created_signal, sender=Lead)

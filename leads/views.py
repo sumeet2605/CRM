@@ -2,6 +2,7 @@ import logging
 from django.utils import timezone
 import datetime
 from django import contrib
+from django.db.models import Q
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.http.response import JsonResponse
@@ -51,47 +52,100 @@ class DashboardView(OraganiserAndLoginRequiredMixin, generic.TemplateView):
         context = super(DashboardView, self).get_context_data(**kwargs)
 
         user = self.request.user
-
+        thirty_days_ago = datetime.date.today() - datetime.timedelta(days=30)
+        converted_category = Category.objects.get(name="Converted")
+        card_out_category = Category.objects.get(name="Card Out")
         # How many leads we have in total
         if user.is_admin:
             total_lead_count = Lead.objects.all().count()
-
+            total_sale_count = Sale.objects.all().count()
+        
             # How many new leads in the last 30 days
-            thirty_days_ago = datetime.date.today() - datetime.timedelta(days=30)
-
+            
             total_in_past30 = Lead.objects.filter(
                 Created_at__gte=thirty_days_ago
             ).count()
-
+            total_sale_in_past30 = Sale.objects.filter(
+                Created_at__gte=thirty_days_ago
+            ).count()
             # How many converted leads in the last 30 days
             converted_category = Category.objects.get(name="Converted")
+            
             converted_in_past30 = Lead.objects.filter(
                 category=converted_category,
                 converted_date__gte=thirty_days_ago
-            ).count()    
-        else:    
+            ).count()
+
+            card_out_in_past30 = Sale.objects.filter(
+                category=card_out_category,
+                Last_Upated__gte=thirty_days_ago
+            )    
+        elif user.is_organiser:    
             total_lead_count = Lead.objects.filter(oraganisation=user.userprofile).count()
-
+            total_sale_count = Sale.objects.filter(oraganisation=user.userprofile).count() 
             # How many new leads in the last 30 days
-            thirty_days_ago = datetime.date.today() - datetime.timedelta(days=30)
-
+            
             total_in_past30 = Lead.objects.filter(
                 oraganisation=user.userprofile,
                 Created_at__gte=thirty_days_ago
             ).count()
 
             # How many converted leads in the last 30 days
-            converted_category = Category.objects.get(name="Converted")
             converted_in_past30 = Lead.objects.filter(
                 oraganisation=user.userprofile,
                 category=converted_category,
+                converted_date__gte=thirty_days_ago
+            ).count()
+
+            total_sale_in_past30 = Sale.objects.filter(
+                oraganisation=user.userprofile,
+                Created_at__gte=thirty_days_ago
+            ).count()
+
+            # How many converted leads in the last 30 days
+            card_out_in_past30 = Sale.objects.filter(
+                oraganisation=user.userprofile,
+                category=card_out_category,
+                converted_date__gte=thirty_days_ago
+            ).count()
+
+        else:
+            total_lead_count = Lead.objects.filter(agent__user=user).count()
+            total_sale_count = Sale.objects.filter(agent__user=user).count() 
+            # How many new leads in the last 30 days
+            
+            total_in_past30 = Lead.objects.filter(
+                agent__user=user ,
+                Created_at__gte=thirty_days_ago
+            ).count()
+
+            # How many converted leads in the last 30 days
+            converted_in_past30 = Lead.objects.filter(
+                agent__user=user,
+                category=converted_category,
+                converted_date__gte=thirty_days_ago
+            ).count()
+
+            total_sale_in_past30 = Sale.objects.filter(
+                agent__user=user,
+                Created_at__gte=thirty_days_ago
+            ).count()
+
+            # How many converted leads in the last 30 days
+            card_out_in_past30 = Sale.objects.filter(
+                agent__user=user,
+                category=card_out_category,
                 converted_date__gte=thirty_days_ago
             ).count()
 
         context.update({
             "total_lead_count": total_lead_count,
             "total_in_past30": total_in_past30,
-            "converted_in_past30": converted_in_past30
+            "converted_in_past30": converted_in_past30,
+            "total_sale_count":total_sale_count,
+            "total_sale_in_past30": total_sale_in_past30,
+            "card_out_in_past30": card_out_in_past30
+            
         })
         return context
 
@@ -226,10 +280,27 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
     template_name = "leads/category_list.html"
     context_object_name = "category_list"
 
+    def get_queryset(self):
+        user = self.request.user
+        # initial queryset of leads for the entire organisation
+        if user.is_admin:
+            queryset = Category.objects.filter(organisation="Lead")
+        elif user.is_organiser:
+            queryset = Category.objects.filter(
+                organisation="Lead"
+            )
+        else:
+            queryset = Category.objects.filter(
+                organisation="Lead"
+            )
+        return queryset
+
     def get_context_data(self, **kwargs):
+        print(**kwargs)
         context = super(CategoryListView, self).get_context_data(**kwargs)
         user = self.request.user
-
+        categories = Category.objects.filter(organisation="Lead")
+             
         if user.is_admin:
             queryset = Lead.objects.all()
         elif user.is_organiser:
@@ -240,27 +311,19 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
             queryset = Lead.objects.filter(
                 oraganisation=user.agent.oraganisation
             )
-
+        
+        # print(queryset.filter([Q(category=category) for category in categories]))
+        
         context.update({
-            "unassigned_lead_count": queryset.filter(category__isnull=True).count(),
-            "assigned_lead_count": queryset.filter(category__isnull=False).count()
+                "unassigned_lead_count": queryset.filter(category__isnull=True).count(),
+                "unconverted_lead_count": queryset.filter(category__name="Unconverted").count(),
+                "contacted_lead_count": queryset.filter(category__name="Contacted").count(),
+                "converted_lead_count": queryset.filter(category__name="Converted").count(),
+                
         })
         return context
 
-    def get_queryset(self):
-        user = self.request.user
-        # initial queryset of leads for the entire organisation
-        if user.is_admin:
-            queryset = Category.objects.all()
-        elif user.is_organiser:
-            queryset = Category.objects.filter(
-                organisation=user.userprofile
-            )
-        else:
-            queryset = Category.objects.filter(
-                organisation=user.agent.oraganisation
-            )
-        return queryset
+    
 
 
 class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
@@ -359,6 +422,8 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
             queryset = queryset.filter(agent__user=user)
         return queryset
 
+    
+
     def get_success_url(self):
         return reverse("leads:lead-detail", kwargs={"pk": self.get_object().id})
 
@@ -371,34 +436,6 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
             if lead_before_update.category != converted_category:
                 # this lead has now been converted
                 instance.converted_date = datetime.datetime.now()
-                if Sale.objects.filter(lead=lead_before_update).exists():
-                    pass
-                else:  
-                    Sale.objects.create(
-                        lead=lead_before_update,
-                        First_Name=lead_before_update.First_Name,
-                        Last_Name=lead_before_update.Last_Name,
-                        Phone_Number=lead_before_update.Phone_Number,
-                        Fater_Name="",
-                        Mother_Name="",
-                        Date_of_Birth=date.today(),
-                        PAN_Number="",
-                        Company_Name="",
-                        Designation="",
-                        Office_Address="",
-                        Current_Residence_Address="",
-                        Permanent_Residence_Address="",
-                        Personal_Email="",
-                        Alternate_Phone_Number="",
-                        Official_Email="",
-                        Bank_Name=instance.Bank_Name,
-                        Remarks="",
-                        oraganisation=instance.oraganisation,
-                        agent=instance.agent,
-                        category=Category.objects.get(id=1),
-                        description = "",
-                        converted_date=datetime.now(),
-                    )
         instance.save()
         return super(LeadCategoryUpdateView, self).form_valid(form)
 

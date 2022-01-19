@@ -25,7 +25,6 @@ class LeadModelForm(forms.ModelForm):
             'First_Name',
             'Last_Name',
             'Bank_Name',
-            'category',
             'Remarks',
         )
 
@@ -74,6 +73,7 @@ class CategoryModelForm(forms.ModelForm):
         model = Category
         fields = (
             'name',
+            'organisation'
         )
 
 
@@ -82,5 +82,6 @@ class FollowUpModelForm(forms.ModelForm):
         model = FollowUp
         fields = (
             'notes',
-            'file'
+            'follow_up_date',
+
         )
