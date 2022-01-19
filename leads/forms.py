@@ -73,7 +73,7 @@ class CategoryModelForm(forms.ModelForm):
         model = Category
         fields = (
             'name',
-            'organisation'
+            
         )
 
 

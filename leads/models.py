@@ -118,13 +118,16 @@ class FollowUp(models.Model):
 
 
 class Category(models.Model):
-    APPNAME = (('Lead', 'Lead'),('Sale', 'Sale'))
     name = models.CharField(max_length=30)  # New, Contacted, Converted, Unconverted
-    organisation = models.CharField(max_length=20, null=True, choices=APPNAME, blank=True)
-
+    
     def __str__(self):
         return self.name
 
+class SaleCategory(models.Model):
+    name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.name
 
 class Sale(models.Model):
     lead = models.OneToOneField(Lead, on_delete=models.CASCADE, null=True, blank=True)

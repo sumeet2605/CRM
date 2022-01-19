@@ -281,25 +281,14 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
     context_object_name = "category_list"
 
     def get_queryset(self):
-        user = self.request.user
-        # initial queryset of leads for the entire organisation
-        if user.is_admin:
-            queryset = Category.objects.filter(organisation="Lead")
-        elif user.is_organiser:
-            queryset = Category.objects.filter(
-                organisation="Lead"
-            )
-        else:
-            queryset = Category.objects.filter(
-                organisation="Lead"
-            )
+        queryset = Category.objects.all()
         return queryset
 
     def get_context_data(self, **kwargs):
         print(**kwargs)
         context = super(CategoryListView, self).get_context_data(**kwargs)
         user = self.request.user
-        categories = Category.objects.filter(organisation="Lead")
+        categories = Category.objects.all()
              
         if user.is_admin:
             queryset = Lead.objects.all()
@@ -331,18 +320,8 @@ class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
     context_object_name = "category"
 
     def get_queryset(self):
-        user = self.request.user
-        # initial queryset of leads for the entire organisation
-        if user.is_admin:
-            queryset = Category.objects.all()
-        elif user.is_organiser:
-            queryset = Category.objects.filter(
-                organisation=user.userprofile
-            )
-        else:
-            queryset = Category.objects.filter(
-                organisation=user.agent.oraganisation
-            )
+        queryset = Category.objects.all()
+        
         return queryset
 
 
@@ -367,18 +346,7 @@ class CategoryUpdateView(OraganiserAndLoginRequiredMixin, generic.UpdateView):
         return reverse("leads:category-list")
 
     def get_queryset(self):
-        user = self.request.user
-        # initial queryset of leads for the entire organisation
-        if user.is_admin:
-            queryset = Category.objects.all()
-        elif user.is_organiser:
-            queryset = Category.objects.filter(
-                organisation="Lead"
-            )
-        else:
-            queryset = Category.objects.filter(
-                organisation="Lead"
-            )
+        queryset = Category.objects.all()
         return queryset
 
 
@@ -389,18 +357,8 @@ class CategoryDeleteView(OraganiserAndLoginRequiredMixin, generic.DeleteView):
         return reverse("leads:category-list")
 
     def get_queryset(self):
-        user = self.request.user
         # initial queryset of leads for the entire organisation
-        if user.is_admin:
-            queryset = Lead.objects.all()
-        elif user.is_organiser:
-            queryset = Category.objects.filter(
-                organisation="Lead"
-            )
-        else:
-            queryset = Category.objects.filter(
-                organisation="Lead"
-            )
+        queryset = Category.objects.all()
         return queryset
 
 
@@ -435,6 +393,10 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
                 instance.converted_date = datetime.datetime.now()
         instance.save()
         return super(LeadCategoryUpdateView, self).form_valid(form)
+
+    def create_sale(self):
+        lead = self.get_object()
+        print(lead)
 
 
 class FollowUpCreateView(LoginRequiredMixin, generic.CreateView):
