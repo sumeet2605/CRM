@@ -376,7 +376,7 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
         # initial queryset of leads for the entire organisation
         if user.is_admin:
             queryset = Lead.objects.all()
-        elif user.is_organisor:
+        elif user.is_organiser:
             queryset = Lead.objects.filter(organisation=user.userprofile)
         else:
             queryset = Lead.objects.all()
