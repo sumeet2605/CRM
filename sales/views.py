@@ -3,7 +3,7 @@ from django.shortcuts import render, reverse
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
-from leads.models import Sale, Category
+from leads.models import Sale, Category, SaleCategory
 from leads.forms import CategoryModelForm, LeadCategoryUpdateForm
 from .forms import SaleModelForm
 from agents.mixin import OraganiserAndLoginRequiredMixin

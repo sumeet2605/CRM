@@ -167,7 +167,8 @@ def handle_upload_documents(instance, filename):
     return f"sale_documents/sale_{instance.sale.pk}/{filename}"
 
 
-class Documents(Sale):
+class Documents(models.Model):
+    sale = models.OneToOneField(Sale, on_delete=models.CASCADE, null=True, blank=True)
     Photo = models.ImageField(upload_to='uploads/%Y/%m', null=True, blank=True)
     PAN_Card_Photo = models.FileField(upload_to='uploads/%Y/%m', null=True, blank=True)
     KYC_Documents = models.FileField(upload_to='uploads/%Y/%m', null=True, blank=True)
@@ -210,7 +211,7 @@ def post_lead_created_signal(sender, instance, created, **kwargs):
                 Remarks="",
                 oraganisation=instance.oraganisation,
                 agent=instance.agent,
-                category=Category.objects.get(id=1),
+                category=SaleCategory.objects.get(name="Documentation"),
                 description = "",
                 converted_date=datetime.now(),
             )
