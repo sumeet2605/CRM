@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    SaleDetailView, SaleListView, SaleUpdateView
+    SaleDetailView, SaleListView, SaleUpdateView, SaleCategoryListView
 )
 
 app_name = "sales"
@@ -15,7 +15,7 @@ urlpatterns = [
     # path('<int:pk>/followups/create/', FollowUpCreateView.as_view(), name='lead-followup-create'),
     # path('followups/<int:pk>/', FollowUpUpdateView.as_view(), name='lead-followup-update'),
     # path('followups/<int:pk>/delete/', FollowUpDeleteView.as_view(), name='lead-followup-delete'),
-    # path('categories/', CategoryListView.as_view(), name='category-list'),
+     path('categories/', SaleCategoryListView.as_view(), name='category-list'),
     # path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category-detail'),
     # path('categories/<int:pk>/update/', CategoryUpdateView.as_view(), name='category-update'),
     # path('categories/<int:pk>/delete/', CategoryDeleteView.as_view(), name='category-delete'),

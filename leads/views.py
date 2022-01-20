@@ -302,13 +302,18 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
             )
         
         # print(queryset.filter([Q(category=category) for category in categories]))
+        context_category= {}
+        
+        for c in categories:
+            context_category[c] = queryset.filter(category=c).count()
+        
+        print(type(context_category))
+        # print(queryset.filter([Q(category=category) for category in categories]))
         
         context.update({
                 "unassigned_lead_count": queryset.filter(category__isnull=True).count(),
-                "unconverted_lead_count": queryset.filter(category__name="Unconverted").count(),
-                "contacted_lead_count": queryset.filter(category__name="Contacted").count(),
-                "converted_lead_count": queryset.filter(category__name="Converted").count(),
-                
+                "context_category": context_category
+                              
         })
         return context
 

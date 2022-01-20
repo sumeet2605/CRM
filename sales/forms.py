@@ -1,5 +1,5 @@
 from django import forms
-from leads.models import Sale
+from leads.models import Sale, SaleCategory
 
 class SaleModelForm(forms.ModelForm):
     class Meta:
@@ -22,6 +22,20 @@ class SaleModelForm(forms.ModelForm):
             'Official_Email',
             'Bank_Name',
             'Remarks',
+        )
+
+class SaleCategoryUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Sale
+        fields = (
             'category',
-            'converted_date'
+        )
+
+
+class SaleCategoryModelForm(forms.ModelForm):
+    class Meta:
+        model = SaleCategory
+        fields = (
+            'name',
+            
         )

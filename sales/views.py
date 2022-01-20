@@ -1,5 +1,6 @@
 import random
 from django.shortcuts import render, reverse
+from django.db.models import Q
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
@@ -86,50 +87,45 @@ class SaleUpdateView(LoginRequiredMixin, generic.UpdateView):
         return super(SaleUpdateView, self).form_valid(form)
 
 
-class CategoryListView(LoginRequiredMixin, generic.ListView):
-    template_name = "leads/category_list.html"
+class SaleCategoryListView(LoginRequiredMixin, generic.ListView):
+    template_name = "sales/category_list.html"
     context_object_name = "category_list"
 
     def get_queryset(self):
-        user = self.request.user
-        # initial queryset of leads for the entire organisation
-        if user.is_admin:
-            queryset = Category.objects.filter(organisation="Lead")
-        elif user.is_organiser:
-            queryset = Category.objects.filter(
-                organisation="Lead"
-            )
-        else:
-            queryset = Category.objects.filter(
-                organisation="Lead"
-            )
+        queryset = SaleCategory.objects.all()
+                
         return queryset
 
     def get_context_data(self, **kwargs):
         print(**kwargs)
-        context = super(CategoryListView, self).get_context_data(**kwargs)
+        context = super(SaleCategoryListView, self).get_context_data(**kwargs)
         user = self.request.user
-        categories = Category.objects.filter(organisation="Lead")
+        categories = SaleCategory.objects.all()
              
         if user.is_admin:
-            queryset = Lead.objects.all()
+            queryset = Sale.objects.all()
         elif user.is_organiser:
-            queryset = Lead.objects.filter(
+            queryset = Sale.objects.filter(
                 oraganisation=user.userprofile
             )
         else:
-            queryset = Lead.objects.filter(
-                oraganisation=user.agent.oraganisation
+            queryset = Sale.objects.filter(
+                agent__user=user
             )
         
+        print(type(queryset))
+        context_category= {}
+        
+        for c in categories:
+            context_category[c] = queryset.filter(category=c).count()
+        
+        print(type(context_category))
         # print(queryset.filter([Q(category=category) for category in categories]))
         
         context.update({
                 "unassigned_lead_count": queryset.filter(category__isnull=True).count(),
-                "unconverted_lead_count": queryset.filter(category__name="Unconverted").count(),
-                "contacted_lead_count": queryset.filter(category__name="Contacted").count(),
-                "converted_lead_count": queryset.filter(category__name="Converted").count(),
-                
+                "context_category": context_category
+                              
         })
         return context
 
