@@ -26,7 +26,7 @@ class SaleListView(LoginRequiredMixin, generic.ListView):
             )
         else:
             queryset = Sale.objects.filter(
-                oagent__isnull=False
+                agent__isnull=False
             )
             queryset = queryset.filter(agent__user=user)
         return queryset
