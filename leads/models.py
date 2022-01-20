@@ -152,7 +152,7 @@ class Sale(models.Model):
     Last_Upated = models.DateTimeField(auto_now=True)
     oraganisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     agent = models.ForeignKey("Agent", on_delete=models.SET_NULL, null=True)
-    category = models.ForeignKey("Category", related_name="sales", null=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey("SaleCategory", related_name="sales", null=True, on_delete=models.SET_NULL)
     description = models.TextField(null=True, blank=True)
     profile_picture = models.ImageField(null=True, blank=True, upload_to="profile_pictures/")
     converted_date = models.DateTimeField(null=True, blank=True)

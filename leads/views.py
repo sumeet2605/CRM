@@ -11,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse 
 from django.views import generic
 from agents.mixin import OraganiserAndLoginRequiredMixin
-from .models import Lead, Agent, Category, FollowUp, Sale, Documents
+from .models import Lead, Agent, Category, FollowUp, Sale, Documents, SaleCategory
 from .forms import (
     
     LeadModelForm,
@@ -54,7 +54,7 @@ class DashboardView(OraganiserAndLoginRequiredMixin, generic.TemplateView):
         user = self.request.user
         thirty_days_ago = datetime.date.today() - datetime.timedelta(days=30)
         converted_category = Category.objects.get(name="Converted")
-        card_out_category = Category.objects.get(name="Card Out")
+        card_out_category = SaleCategory.objects.get(name="Card Out")
         # How many leads we have in total
         if user.is_admin:
             total_lead_count = Lead.objects.all().count()
@@ -79,7 +79,7 @@ class DashboardView(OraganiserAndLoginRequiredMixin, generic.TemplateView):
             card_out_in_past30 = Sale.objects.filter(
                 category=card_out_category,
                 Last_Upated__gte=thirty_days_ago
-            )    
+            ).count()    
         elif user.is_organiser:    
             total_lead_count = Lead.objects.filter(oraganisation=user.userprofile).count()
             total_sale_count = Sale.objects.filter(oraganisation=user.userprofile).count() 
