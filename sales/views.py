@@ -9,6 +9,7 @@ from leads.forms import CategoryModelForm, LeadCategoryUpdateForm
 from .forms import SaleModelForm
 from agents.mixin import OraganiserAndLoginRequiredMixin
 
+
 # Create your views here.
 class SaleListView(LoginRequiredMixin, generic.ListView):
     template_name = "sales/sale_list.html"
@@ -60,6 +61,8 @@ class SaleDetailView(LoginRequiredMixin, generic.DetailView):
         else:
             queryset = Sale.objects.all()
             queryset = queryset.filter(agent__user=self.request.user)
+        
+        
         return queryset
 
 
