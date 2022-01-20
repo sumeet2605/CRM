@@ -3,7 +3,7 @@ from django.forms import ClearableFileInput
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UsernameField
-from .models import Lead, Agent, Category, FollowUp, Sale, Documents
+from .models import Lead, Agent, Category, FollowUp, Sale
 
 User = get_user_model()
 
@@ -30,25 +30,7 @@ class LeadModelForm(forms.ModelForm):
 
 
 
-class DocumentsModelForm(forms.ModelForm):
-    class Meta:
-        model = Documents
-        fields =[
-            'Photo',
-            'PAN_Card_Photo',
-            'KYC_Documents',
-            'Card_Copy',
-            'Card_Statement',
-            'Salary_Slips',
-            'Company_ID',
-            'Bank_Statement'
-        ]
-        widgets = {
-            'KYC_Documents' : ClearableFileInput(attrs={'multiple': True}),
-            'Card_Statement' : ClearableFileInput(attrs={'multiple': True}),
-            'Salary_Slips' : ClearableFileInput(attrs={'multiple': True}),
-            'Bank_Statement' : ClearableFileInput(attrs={'multiple': True}),
-            }
+
     
 class AssignAgentForm(forms.Form):
     agent = forms.ModelChoiceField(queryset=Agent.objects.none())

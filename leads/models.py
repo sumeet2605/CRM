@@ -167,17 +167,6 @@ def handle_upload_documents(instance, filename):
     return f"sale_documents/sale_{instance.sale.pk}/{filename}"
 
 
-class Documents(models.Model):
-    sale = models.OneToOneField(Sale, on_delete=models.CASCADE, null=True, blank=True)
-    Photo = models.ImageField(upload_to='uploads/%Y/%m', null=True, blank=True)
-    PAN_Card_Photo = models.FileField(upload_to='uploads/%Y/%m', null=True, blank=True)
-    KYC_Documents = models.FileField(upload_to='uploads/%Y/%m', null=True, blank=True)
-    Card_Copy = models.ImageField(null=True, upload_to='uploads/%Y/%m', blank=True)
-    Card_Statement = models.FileField(upload_to='uploads/%Y/%m', null=True, blank=True)
-    Salary_Slips = models.FileField(upload_to='uploads/%Y/%m', null=True, blank=True)
-    Company_ID = models.FileField(upload_to='uploads/%Y/%m', null=True, blank=True)
-    Bank_Statement = models.FileField(upload_to='uploads/%Y/%m', null=True, blank=True)
-    
 
 def post_user_created_signal(sender, instance, created, **kwargs):
     if created:

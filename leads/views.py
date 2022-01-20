@@ -11,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse 
 from django.views import generic
 from agents.mixin import OraganiserAndLoginRequiredMixin
-from .models import Lead, Agent, Category, FollowUp, Sale, Documents, SaleCategory
+from .models import Lead, Agent, Category, FollowUp, Sale, SaleCategory
 from .forms import (
     
     LeadModelForm,
@@ -20,7 +20,7 @@ from .forms import (
     LeadCategoryUpdateForm,
     CategoryModelForm,
     FollowUpModelForm,
-    DocumentsModelForm
+    
 
 ) 
 
