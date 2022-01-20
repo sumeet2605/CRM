@@ -45,7 +45,7 @@ class LandingPageView(generic.TemplateView):
             return redirect("dashboard")
         return super().dispatch(request, *args, **kwargs)
 
-class DashboardView(OraganiserAndLoginRequiredMixin, generic.TemplateView):
+class DashboardView(LoginRequiredMixin, generic.TemplateView):
     template_name = "dashboard.html"
 
     def get_context_data(self, **kwargs):
