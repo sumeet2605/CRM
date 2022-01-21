@@ -21,19 +21,96 @@
                     <a href="{% url 'sales:sale-detail' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">
                         Overview
                     </a>
-                    <a href="#" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">
+                    {% if lead.category.name != "Card Out" or lead.category.name != "Declined" or lead.category.name != "Logged in" %}             
+                    <a href="{% url 'sales:lead-category-update' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">
                         Category
                     </a>
                     <a href="{% url 'sales:sale-update' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">
                         Update Details
-                    </a>    
+                    </a>
+                    {% endif %}    
                 </div>
-                
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Bank Name</span>
+                    <span class="ml-auto text-gray-900">{{ lead.Bank_Name }}</span>
+                </div>
                 <div class="flex border-t border-gray-300 py-2">
                     <span class="text-gray-500">Father Name</span>
                     <span class="ml-auto text-gray-900">{{ lead.Father_Name }}</span>
                 </div>
-                
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Mother Name</span>
+                    <span class="ml-auto text-gray-900">{{ lead.Mother_Name }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Date of Birth</span>
+                    <span class="ml-auto text-gray-900">{{ lead.Date_of_Birth }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Pan Number</span>
+                    <span class="ml-auto text-gray-900">{{ lead.PAN_Number }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Company Name</span>
+                    <span class="ml-auto text-gray-900">{{ lead.Company_Name }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Designation</span>
+                    <span class="ml-auto text-gray-900">{{ lead.Designation }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Office Address</span>
+                    <span class="ml-auto text-gray-900">{{ lead.Office_Address }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Current Residence Address</span>
+                    <span class="ml-auto text-gray-900">{{ lead.Current_Residence_Address }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Permanent Residence Address</span>
+                    <span class="ml-auto text-gray-900">{{ lead.Permanent_Residence_Address }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Personal Email</span>
+                    <span class="ml-auto text-gray-900">{{ lead.Personal_Email }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Alternate Phone Number</span>
+                    <span class="ml-auto text-gray-900">{{ lead.Alternate_Phone_Number }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Official Email</span>
+                    <span class="ml-auto text-gray-900">{{ lead.Official_Email }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Application Number</span>
+                    <span class="ml-auto text-gray-900">{{ lead.Application_Number }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Agent</span>
+                    <span class="ml-auto text-gray-900">{{ lead.agent }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Last Update</span>
+                    <span class="ml-auto text-gray-900">{{ lead.updated_by }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Remarks</span>
+                    <span class="ml-auto text-gray-900">{{ lead.remarks }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Category</span>
+                    <span class="ml-auto text-gray-900">{{ lead.category.name }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Created Date</span>
+                    <span class="ml-auto text-gray-900">{{ lead.Created_at }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Last Updated On</span>
+                    <span class="ml-auto text-gray-900">{{ lead.Last_Upated }}</span>
+                </div>
+
             </div>
 
         

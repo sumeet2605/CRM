@@ -67,3 +67,5 @@ class FollowUpModelForm(forms.ModelForm):
             'follow_up_date',
 
         )
+        widget=forms.DateInput(
+            attrs={'placeholder': '__/__/____', 'class': 'date',})

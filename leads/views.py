@@ -174,7 +174,11 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(LeadListView, self).get_context_data(**kwargs)
         user = self.request.user
-        if user.is_organiser:
+        if user.is_admin:
+            queryset = Lead.objects.filter(
+                agent__isnull=True
+            ).order_by('Created_at')
+        elif user.is_organiser:
             queryset = Lead.objects.filter(
                 oraganisation=user.userprofile,
                 agent__isnull=True
@@ -198,7 +202,10 @@ class LeadDetailView(LoginRequiredMixin, generic.DetailView):
         else:
             queryset = Lead.objects.all()
             queryset = queryset.filter(agent__user=user)
+        
         return queryset
+
+    
 
 class LeadCreateView(LoginRequiredMixin, generic.CreateView):
     template_name = "leads/lead_create.html"
@@ -211,7 +218,7 @@ class LeadCreateView(LoginRequiredMixin, generic.CreateView):
         lead = form.save(commit=False)
         lead.agent = Agent.objects.get(user_id=self.request.user)
         lead.oraganisation = self.request.user.userprofile
-
+        lead.updated_by=""
         lead.save()
         messages.success(self.request, "You have successfully created a lead")
         return super(LeadCreateView, self).form_valid(form)
@@ -224,6 +231,7 @@ class LeadUpdateView(LoginRequiredMixin, generic.UpdateView):
         user = self.request.user
         if user.is_admin:
             queryset = Lead.objects.all()
+            
         elif user.is_organiser:
             queryset = Lead.objects.filter(oraganisation=user.userprofile)
         else:
@@ -235,7 +243,9 @@ class LeadUpdateView(LoginRequiredMixin, generic.UpdateView):
         return reverse("leads:lead-list")
 
     def form_valid(self, form):
-        form.save()
+        lead = form.save(commit=False)
+        lead.Updated_by = Agent.objects.get(user_id=self.request.user)
+        lead.save()
         messages.info(self.request, "You have successfully updated this lead")
         return super(LeadUpdateView, self).form_valid(form)
 

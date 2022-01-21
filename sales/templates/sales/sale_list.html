@@ -74,9 +74,11 @@
                                     {% endif %}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    {% if sale.category.name != "Card Out" or sale.category.name != "Declined" or sale.category.name != "Logged in" %}
                                     <a href="{% url 'sales:sale-update' sale.pk %}" class="text-indigo-600 hover:text-indigo-900">
                                         Edit
                                     </a>
+                                    {% endif %}
                                 </td>
                             </tr>
 

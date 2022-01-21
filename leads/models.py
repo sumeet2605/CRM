@@ -91,6 +91,7 @@ class Lead(models.Model):
     Application_Type = models.CharField(max_length=30, null=True, choices=APPLICACTIONTYPE, blank=True)
     Remarks = models.CharField(null = True, max_length = 40, blank=True)
     Created_at = models.DateTimeField(auto_now_add=True)
+    Updated_by = models.ForeignKey("Agent", related_name="update", on_delete=models.SET_NULL, null=True, blank=True)
     Last_Upated = models.DateTimeField(auto_now=True)
     oraganisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     agent = models.ForeignKey("Agent", on_delete=models.SET_NULL, null=True, blank=True)
@@ -111,7 +112,7 @@ class FollowUp(models.Model):
     lead = models.ForeignKey(Lead, related_name="followups", on_delete=models.CASCADE)
     date_added = models.DateTimeField(auto_now_add=True)
     notes = models.TextField(blank=True, null=True)
-    follow_up_date = models.DateTimeField()
+    follow_up_date = models.DateField()
 
     def __str__(self):
         return f"{self.lead.first_name} {self.lead.last_name}"
@@ -148,7 +149,9 @@ class Sale(models.Model):
     Official_Email = models.EmailField(null=True)
     Bank_Name = models.CharField(max_length=20)
     Remarks = models.CharField(max_length = 40, blank=True)
+    Application_Number= models.CharField(max_length=30, blank=True, null=True)
     Created_at = models.DateTimeField(auto_now_add=True)
+    updated_by = models.ForeignKey(Agent, related_name="saleupdate", on_delete=models.SET_NULL, null=True, blank=True)
     Last_Upated = models.DateTimeField(auto_now=True)
     oraganisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     agent = models.ForeignKey("Agent", on_delete=models.SET_NULL, null=True)
@@ -197,6 +200,8 @@ def post_lead_created_signal(sender, instance, created, **kwargs):
                 Alternate_Phone_Number="",
                 Official_Email="",
                 Bank_Name=instance.Bank_Name,
+                Application_Number="",
+                updated_by="",
                 Remarks="",
                 oraganisation=instance.oraganisation,
                 agent=instance.agent,

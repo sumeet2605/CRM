@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from leads.models import Sale, Category, SaleCategory
 from leads.forms import CategoryModelForm, LeadCategoryUpdateForm
-from .forms import SaleModelForm
+from .forms import SaleModelForm, SaleCategoryModelForm, SaleCategoryUpdateForm
 from agents.mixin import OraganiserAndLoginRequiredMixin
 
 
@@ -60,7 +60,7 @@ class SaleDetailView(LoginRequiredMixin, generic.DetailView):
             queryset = Sale.objects.filter(oraganisation=user.userprofile)
         else:
             queryset = Sale.objects.all()
-            queryset = queryset.filter(agent__user=self.request.user)
+            queryset = queryset.filter(agent__user=user)
         
         
         return queryset
@@ -85,7 +85,8 @@ class SaleUpdateView(LoginRequiredMixin, generic.UpdateView):
         return reverse("sales:sale-list")
 
     def form_valid(self, form):
-        form.save()
+        sale = form.save(commit=False)
+        sale.updated_by = Agent.objects.get(user_id=self.request.user)
         messages.info(self.request, "You have successfully updated this Sale")
         return super(SaleUpdateView, self).form_valid(form)
 
@@ -116,13 +117,12 @@ class SaleCategoryListView(LoginRequiredMixin, generic.ListView):
                 agent__user=user
             )
         
-        print(type(queryset))
         context_category= {}
         
         for c in categories:
             context_category[c] = queryset.filter(category=c).count()
         
-        print(type(context_category))
+        
         # print(queryset.filter([Q(category=category) for category in categories]))
         
         context.update({
@@ -135,112 +135,87 @@ class SaleCategoryListView(LoginRequiredMixin, generic.ListView):
     
 
 
-class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
-    template_name = "leads/category_detail.html"
+class SaleCategoryDetailView(LoginRequiredMixin, generic.DetailView):
+    template_name = "sales/category_detail.html"
     context_object_name = "category"
 
     def get_queryset(self):
         user = self.request.user
         # initial queryset of leads for the entire organisation
-        if user.is_admin:
-            queryset = Category.objects.all()
-        elif user.is_organiser:
-            queryset = Category.objects.filter(
-                organisation=user.userprofile
-            )
-        else:
-            queryset = Category.objects.filter(
-                organisation=user.agent.oraganisation
-            )
+        queryset = SaleCategory.objects.all()
+       
         return queryset
 
 
-class CategoryCreateView(OraganiserAndLoginRequiredMixin, generic.CreateView):
-    template_name = "leads/category_create.html"
-    form_class = CategoryModelForm
+class SaleCategoryCreateView(OraganiserAndLoginRequiredMixin, generic.CreateView):
+    template_name = "sales/category_create.html"
+    form_class = SaleCategoryModelForm
 
     def get_success_url(self):
-        return reverse("leads:category-list")
+        return reverse("sales:category-list")
 
     def form_valid(self, form):
         category = form.save(commit=False)
         category.save()
-        return super(CategoryCreateView, self).form_valid(form)
+        return super(SaleCategoryCreateView, self).form_valid(form)
 
 
 class CategoryUpdateView(OraganiserAndLoginRequiredMixin, generic.UpdateView):
-    template_name = "leads/category_update.html"
+    template_name = "sales/category_update.html"
     form_class = CategoryModelForm
 
     def get_success_url(self):
-        return reverse("leads:category-list")
+        return reverse("sales:category-list")
 
     def get_queryset(self):
         user = self.request.user
         # initial queryset of leads for the entire organisation
-        if user.is_admin:
-            queryset = Category.objects.all()
-        elif user.is_organiser:
-            queryset = Category.objects.filter(
-                organisation="Lead"
-            )
-        else:
-            queryset = Category.objects.filter(
-                organisation="Lead"
-            )
+        queryset = SaleCategory.objects.all()
         return queryset
 
 
 class CategoryDeleteView(OraganiserAndLoginRequiredMixin, generic.DeleteView):
-    template_name = "leads/category_delete.html"
+    template_name = "sales/category_delete.html"
 
     def get_success_url(self):
-        return reverse("leads:category-list")
+        return reverse("sales:category-list")
 
     def get_queryset(self):
         user = self.request.user
         # initial queryset of leads for the entire organisation
-        if user.is_admin:
-            queryset = Lead.objects.all()
-        elif user.is_organiser:
-            queryset = Category.objects.filter(
-                organisation="Lead"
-            )
-        else:
-            queryset = Category.objects.filter(
-                organisation="Lead"
-            )
+        queryset = SaleCategory.objects.all()
+        
         return queryset
 
 
-class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
-    template_name = "leads/lead_category_update.html"
-    form_class = LeadCategoryUpdateForm
+class SaleCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
+    template_name = "sales/lead_category_update.html"
+    form_class = SaleCategoryUpdateForm
 
     def get_queryset(self):
         user = self.request.user
         # initial queryset of leads for the entire organisation
         if user.is_admin:
-            queryset = Lead.objects.all()
+            queryset = Sale.objects.all()
         elif user.is_organiser:
-            queryset = Lead.objects.filter(organisation=user.userprofile)
+            queryset = Sale.objects.filter(organisation=user.userprofile)
         else:
-            queryset = Lead.objects.all()
+            queryset = Sale.objects.all()
             # filter for the agent that is logged in
             queryset = queryset.filter(agent__user=user)
         return queryset
 
     def get_success_url(self):
-        return reverse("leads:lead-detail", kwargs={"pk": self.get_object().id})
+        return reverse("sales:sale-detail", kwargs={"pk": self.get_object().id})
 
     def form_valid(self, form):
         lead_before_update = self.get_object()
         instance = form.save(commit=False)
-        converted_category = Category.objects.get(name="Converted")
+        converted_category = SaleCategory.objects.get(name="Logged in")
         if form.cleaned_data["category"] == converted_category:
             # update the date at which this lead was converted
             if lead_before_update.category != converted_category:
                 # this lead has now been converted
                 instance.converted_date = datetime.datetime.now()
         instance.save()
-        return super(LeadCategoryUpdateView, self).form_valid(form)
+        return super(SaleCategoryUpdateView, self).form_valid(form)
