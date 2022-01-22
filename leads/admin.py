@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import User, Lead, Agent, UserProfile, Category, FollowUp, UserType, Department, Sale, SaleCategory
+from .models import User, Lead, Agent, UserProfile, Category, FollowUp, UserType, Department, Sale, SaleCategory, Document
 
 
 
@@ -26,3 +26,4 @@ admin.site.register(Lead, LeadAdmin)
 admin.site.register(Agent)
 admin.site.register(FollowUp)
 admin.site.register(SaleCategory)
+admin.site.register(Document)

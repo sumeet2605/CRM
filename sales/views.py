@@ -5,8 +5,8 @@ from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from leads.models import Sale, Category, SaleCategory
-from leads.forms import CategoryModelForm, LeadCategoryUpdateForm
-from .forms import SaleModelForm, SaleCategoryModelForm, SaleCategoryUpdateForm
+
+from .forms import SaleModelForm, SaleCategoryModelForm, SaleCategoryUpdateForm, DocumentCreateForm
 from agents.mixin import OraganiserAndLoginRequiredMixin
 
 
@@ -162,7 +162,7 @@ class SaleCategoryCreateView(OraganiserAndLoginRequiredMixin, generic.CreateView
 
 class CategoryUpdateView(OraganiserAndLoginRequiredMixin, generic.UpdateView):
     template_name = "sales/category_update.html"
-    form_class = CategoryModelForm
+    form_class = SaleCategoryModelForm
 
     def get_success_url(self):
         return reverse("sales:category-list")
@@ -219,3 +219,34 @@ class SaleCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
                 instance.converted_date = datetime.datetime.now()
         instance.save()
         return super(SaleCategoryUpdateView, self).form_valid(form)
+
+
+class DocumentUpdateView(LoginRequiredMixin, generic.UpdateView):
+    template_name = "sales/document_create.html"
+    form_class = DocumentCreateForm
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_admin:
+            queryset = Sale.objects.all()
+        elif user.is_organiser:
+            queryset = Sale.objects.filter(oraganisation=user.userprofile)
+        else:
+            queryset = Sale.objects.filter(oraganisation=user.agent.oraganisation)
+            queryset = queryset.filter(agent__user=self.request.user)
+        return queryset
+
+    def get_success_url(self):
+        return reverse("sales:sale-list")
+
+    def form_valid(self, form):
+
+        obj = form.save(commit=False)
+        if self.request.FILES:
+            for f in self.request.FILES.getlist('kyc_document'):
+                obj = self.model.objects.create(kyc_document=f)
+
+            for f in self.request.FILES.getlist('kyc_document'):
+                obj = self.model.objects.create(kyc_document=f)
+
+        return super(DocumentCreate, self).form_valid(form)

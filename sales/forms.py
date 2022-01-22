@@ -1,5 +1,5 @@
 from django import forms
-from leads.models import Sale, SaleCategory
+from leads.models import Sale, SaleCategory, Document
 
 class SaleModelForm(forms.ModelForm):
     class Meta:
@@ -22,6 +22,7 @@ class SaleModelForm(forms.ModelForm):
             'Official_Email',
             'Bank_Name',
             'Remarks',
+            'profile_picture'
         )
 
 class SaleCategoryUpdateForm(forms.ModelForm):
@@ -38,4 +39,19 @@ class SaleCategoryModelForm(forms.ModelForm):
         fields = (
             'name',
             
+        )
+
+
+class DocumentCreateForm(forms.ModelForm):
+   class Meta:
+        model = Document
+        fields = (
+            'photo',
+            'pan_card',
+            'kyc_document',
+            'card_copy',
+            'card_statement',
+            'company_id',
+            'salary_slips',
+            'bank_statement'
         )
