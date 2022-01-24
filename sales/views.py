@@ -1,12 +1,12 @@
 import random
 from django.shortcuts import render, reverse
 from django.db.models import Q
+from django.contrib import messages
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
-from leads.models import Sale, Category, SaleCategory
-
-from .forms import SaleModelForm, SaleCategoryModelForm, SaleCategoryUpdateForm, DocumentCreateForm
+from leads.models import Sale, Category, SaleCategory, Document
+from .forms import SaleModelForm, SaleCategoryModelForm, SaleCategoryUpdateForm, DocumentCreateForm, Card2CardForm, SalariedForm
 from agents.mixin import OraganiserAndLoginRequiredMixin
 
 
@@ -18,6 +18,7 @@ class SaleListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         user = self.request.user
+        print(user.agent.oraganisation)
         if user.is_admin:
             queryset = Sale.objects.all()
         elif user.is_organiser:
@@ -27,6 +28,7 @@ class SaleListView(LoginRequiredMixin, generic.ListView):
             )
         else:
             queryset = Sale.objects.filter(
+                oraganisation=user.agent.oraganisation,
                 agent__isnull=False
             )
             queryset = queryset.filter(agent__user=user)
@@ -39,7 +41,7 @@ class SaleListView(LoginRequiredMixin, generic.ListView):
             queryset = Sale.objects.filter(agent__isnull=True)
         elif user.is_organiser:
             queryset = Sale.objects.filter(
-                oraganisation=user.userprofile,
+                
                 agent__isnull=True
             )
             context.update({
@@ -87,6 +89,7 @@ class SaleUpdateView(LoginRequiredMixin, generic.UpdateView):
     def form_valid(self, form):
         sale = form.save(commit=False)
         sale.updated_by = Agent.objects.get(user_id=self.request.user)
+        sale.save()
         messages.info(self.request, "You have successfully updated this Sale")
         return super(SaleUpdateView, self).form_valid(form)
 
@@ -101,7 +104,7 @@ class SaleCategoryListView(LoginRequiredMixin, generic.ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
-        print(**kwargs)
+        
         context = super(SaleCategoryListView, self).get_context_data(**kwargs)
         user = self.request.user
         categories = SaleCategory.objects.all()
@@ -174,7 +177,7 @@ class CategoryUpdateView(OraganiserAndLoginRequiredMixin, generic.UpdateView):
         return queryset
 
 
-class CategoryDeleteView(OraganiserAndLoginRequiredMixin, generic.DeleteView):
+class SaleCategoryDeleteView(OraganiserAndLoginRequiredMixin, generic.DeleteView):
     template_name = "sales/category_delete.html"
 
     def get_success_url(self):
@@ -221,32 +224,28 @@ class SaleCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
         return super(SaleCategoryUpdateView, self).form_valid(form)
 
 
-class DocumentUpdateView(LoginRequiredMixin, generic.UpdateView):
+class DocumentCreateView(LoginRequiredMixin, generic.CreateView):
     template_name = "sales/document_create.html"
     form_class = DocumentCreateForm
 
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_admin:
-            queryset = Sale.objects.all()
-        elif user.is_organiser:
-            queryset = Sale.objects.filter(oraganisation=user.userprofile)
-        else:
-            queryset = Sale.objects.filter(oraganisation=user.agent.oraganisation)
-            queryset = queryset.filter(agent__user=self.request.user)
-        return queryset
-
+    
     def get_success_url(self):
         return reverse("sales:sale-list")
 
+    def get_context_data(self, **kwargs):
+        context = super(DocumentCreateView, self).get_context_data(**kwargs)
+        context.update({
+            "lead": Sale.objects.get(pk=self.kwargs["pk"])
+        })
+        return context
+
     def form_valid(self, form):
-
-        obj = form.save(commit=False)
+        sale = Sale.objects.get(pk=self.kwargs["pk"])
+        documents = form.save(commit=False)
+        documents.sale = sale
         if self.request.FILES:
-            for f in self.request.FILES.getlist('kyc_document'):
-                obj = self.model.objects.create(kyc_document=f)
+            for f in self.request.FILES.getlist('kyc_documents'):
+                print(f)
+            
+        return super(DocumentCreateView, self).form_valid(form)
 
-            for f in self.request.FILES.getlist('kyc_document'):
-                obj = self.model.objects.create(kyc_document=f)
-
-        return super(DocumentCreate, self).form_valid(form)

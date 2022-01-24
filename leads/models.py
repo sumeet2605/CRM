@@ -113,6 +113,7 @@ class FollowUp(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     notes = models.TextField(blank=True, null=True)
     follow_up_date = models.DateField()
+    follow_up_time =models.TimeField()
 
     def __str__(self):
         return f"{self.lead.first_name} {self.lead.last_name}"
@@ -166,24 +167,25 @@ class Sale(models.Model):
     def __str__(self):
         return f"{self.First_Name} {self.Last_Name}"
 
+def handle_upload_documents(instance, filename):
+        return f"sale_documents/sale_{instance.sale.pk}/{filename}"
 
 class Document(models.Model):
     sale = models.OneToOneField(Sale, on_delete=models.CASCADE, null=True, blank=True)
-    photo = models.ImageField(null=True, blank=True, upload_to="Documents/")
-    pan_card = models.FileField(null=True, blank=True, upload_to="Documents/")
-    kyc_document = models.FileField(null=True, blank=True, upload_to="Documents/")
-    card_copy = models.ImageField(null=True, blank=True, upload_to="Documents/")
-    card_statement = models.FileField(null=True, blank=True, upload_to="Documents/")
-    company_id = models.ImageField(null=True, blank=True, upload_to="Documents/")
-    salary_slips = models.FileField(null=True, blank=True, upload_to="Documents/")
-    bank_statement = models.FileField(null=True, blank=True, upload_to="Documents/")
+    photo = models.ImageField(null=True, blank=True, upload_to=handle_upload_documents)
+    pan_card = models.FileField(null=True, blank=True, upload_to=handle_upload_documents)
+    kyc_documents = models.FileField(null=True, blank=True, upload_to=handle_upload_documents)
+    card_copy = models.ImageField(null=True, blank=True, upload_to=handle_upload_documents)
+    card_statement = models.FileField(null=True, blank=True, upload_to=handle_upload_documents)
+    company_id = models.ImageField(null=True, blank=True, upload_to=handle_upload_documents)
+    salary_slips = models.FileField(null=True, blank=True, upload_to=handle_upload_documents)
+    bank_statement = models.FileField(null=True, blank=True, upload_to=handle_upload_documents)
 
 
     def __str__(self):
         return f"{self.sale.First_Name} {self.sale.Last_Name}"
 
-    def handle_upload_documents(instance, filename):
-        return f"sale_documents/sale_{instance.sale.pk}/{filename}"
+    
 
 
 
@@ -225,9 +227,7 @@ def post_lead_created_signal(sender, instance, created, **kwargs):
                 description = "",
                 converted_date=datetime.now(),
             )
-            Document.objects.create(
-                sale=Sale.objects.get(lead=instance)
-            )
+            
             
         
     

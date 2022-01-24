@@ -2,6 +2,7 @@ from django import forms
 from django.forms import ClearableFileInput
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
+from .widgets import DatePickerInput, DateTimePickerInput, TimePickerInput
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from .models import Lead, Agent, Category, FollowUp, Sale
 
@@ -62,10 +63,13 @@ class CategoryModelForm(forms.ModelForm):
 class FollowUpModelForm(forms.ModelForm):
     class Meta:
         model = FollowUp
-        fields = (
+        fields = [
             'notes',
             'follow_up_date',
-
-        )
-        widget=forms.DateInput(
-            attrs={'placeholder': '__/__/____', 'class': 'date',})
+            'follow_up_time'
+        ]
+        
+        widgets = {
+            'follow_up_date': DatePickerInput(),
+            'follow_up_time': TimePickerInput()
+            }

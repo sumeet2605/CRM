@@ -71,6 +71,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'rizcrm.urls'
 
+FILE_UPLOAD_HANDLERS =[
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
+ "django.core.files.uploadhandler.TemporaryFileUploadHandler"]
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

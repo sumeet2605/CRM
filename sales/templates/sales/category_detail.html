@@ -27,12 +27,12 @@
             </tr>
           </thead>
           <tbody>
-            {% for lead in category.leads.all %}
+            {% for lead in category.sales.all %}
                 <tr>
                     <td class="px-4 py-3">
-                      <a class="hover:text-blue-500" href="{% url 'leads:lead-detail' lead.pk %}">{{ lead.first_name }}</a>
+                      <a class="hover:text-blue-500" href="{% url 'sales:sale-detail' lead.pk %}">{{ lead.First_Name }}</a>
                     </td>
-                    <td class="px-4 py-3">{{ lead.last_name }}</td>
+                    <td class="px-4 py-3">{{ lead.Last_Name }}</td>
                 </tr>
             {% endfor %}
           </tbody>

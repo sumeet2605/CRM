@@ -295,7 +295,7 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
-        print(**kwargs)
+        # print(**kwargs)
         context = super(CategoryListView, self).get_context_data(**kwargs)
         user = self.request.user
         categories = Category.objects.all()
@@ -314,10 +314,12 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
         # print(queryset.filter([Q(category=category) for category in categories]))
         context_category= {}
         
+        # print(categories) 
+
         for c in categories:
             context_category[c] = queryset.filter(category=c).count()
         
-        print(type(context_category))
+        # print(context_category)
         # print(queryset.filter([Q(category=category) for category in categories]))
         
         context.update({

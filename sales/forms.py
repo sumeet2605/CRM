@@ -24,6 +24,7 @@ class SaleModelForm(forms.ModelForm):
             'Remarks',
             'profile_picture'
         )
+        widgets = {'Date_of_Birth': forms.widgets.DateInput(attrs={'type': 'date' })}
 
 class SaleCategoryUpdateForm(forms.ModelForm):
     class Meta:
@@ -36,22 +37,51 @@ class SaleCategoryUpdateForm(forms.ModelForm):
 class SaleCategoryModelForm(forms.ModelForm):
     class Meta:
         model = SaleCategory
-        fields = (
+        fields = [
             'name',
-            
-        )
+        ]
 
 
 class DocumentCreateForm(forms.ModelForm):
-   class Meta:
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['kyc_documents'] = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
+ 
+    class Meta:
         model = Document
-        fields = (
+        fields = [
             'photo',
             'pan_card',
-            'kyc_document',
+            'kyc_documents',
+        ]
+        
+
+
+            
+class Card2CardForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['card_statement'] = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
+
+    class Meta:
+        model = Document
+        fields = [
             'card_copy',
             'card_statement',
+        ]        
+
+
+class SalariedForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['salary_slips'] = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
+        self.fields['bank_statement'] = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    
+    class Meta:
+        model = Document
+        fields = [
             'company_id',
             'salary_slips',
             'bank_statement'
-        )
+        ]

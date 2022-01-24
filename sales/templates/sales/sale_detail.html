@@ -21,6 +21,7 @@
                     <a href="{% url 'sales:sale-detail' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">
                         Overview
                     </a>
+                    
                     {% if lead.category.name != "Card Out" or lead.category.name != "Declined" or lead.category.name != "Logged in" %}             
                     <a href="{% url 'sales:lead-category-update' lead.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">
                         Category
@@ -113,7 +114,7 @@
 
             </div>
 
-        
+        <a href="#" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Add Documents</a>
         </div>
 
         
