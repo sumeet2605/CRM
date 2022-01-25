@@ -1,4 +1,6 @@
 from datetime import date, datetime
+import pytz
+from django.utils import timezone
 from django.db import models
 from django.db.models.signals import post_save
 from django.contrib.auth.models import AbstractUser
@@ -85,7 +87,8 @@ class Lead(models.Model):
     Product = models.CharField(max_length=20, choices=PRODUCT)
     First_Name = models.CharField(max_length=20, null=True, blank=True)
     Last_Name = models.CharField(max_length=20, null=True, blank=True)
-    Phone_Number = models.CharField(max_length=10, null=True, blank=True, unique=True)
+    Phone_Number = models.CharField(max_length=10, null=True, blank=True)
+    Email = models.EmailField(null=True, blank=True)
     Call_Status = models.CharField(max_length=30, choices=CALLSTATUS, null=True, blank=True)
     Bank_Name = models.CharField(max_length=20, null=True, choices=BANKNAME, blank=True)
     Application_Type = models.CharField(max_length=30, null=True, choices=APPLICACTIONTYPE, blank=True)
@@ -138,7 +141,7 @@ class Sale(models.Model):
     Fater_Name = models.CharField(max_length=40, null=True)
     Mother_Name = models.CharField(max_length=40, null=True)
     Date_of_Birth = models.DateField(null=True)
-    Phone_Number = models.CharField(max_length=10, unique=True)
+    Phone_Number = models.CharField(max_length=10)
     PAN_Number = models.CharField(max_length=10, null=True)
     Company_Name = models.CharField(max_length=30, null=True)
     Designation = models.CharField(max_length=20, null=True)
@@ -227,11 +230,6 @@ def post_lead_created_signal(sender, instance, created, **kwargs):
                 description = "",
                 converted_date=datetime.now(),
             )
-            
-            
-        
-    
-        
 
 post_save.connect(post_user_created_signal, sender=User)
 post_save.connect(post_lead_created_signal, sender=Lead)

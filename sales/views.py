@@ -18,20 +18,20 @@ class SaleListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         user = self.request.user
+        queryset = Sale.objects.all()
         print(user.agent.oraganisation)
         if user.is_admin:
-            queryset = Sale.objects.all()
+            queryset = queryset
         elif user.is_organiser:
-            queryset = Sale.objects.filter(
+            queryset = queryset.filter(
                 oraganisation=user.userprofile,
                 agent__isnull=False
             )
         else:
-            queryset = Sale.objects.filter(
-                oraganisation=user.agent.oraganisation,
+            queryset = queryset.filter(
+                agent__user=user,
                 agent__isnull=False
             )
-            queryset = queryset.filter(agent__user=user)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -56,12 +56,13 @@ class SaleDetailView(LoginRequiredMixin, generic.DetailView):
 
     def get_queryset(self):
         user = self.request.user
+        queryset = Sale.objects.all()
         if user.is_admin:
-            queryset = Sale.objects.all()
+            queryset = queryset
         elif user.is_organiser:
-            queryset = Sale.objects.filter(oraganisation=user.userprofile)
+            queryset = queryset.filter(oraganisation=user.userprofile)
         else:
-            queryset = Sale.objects.all()
+            
             queryset = queryset.filter(agent__user=user)
         
         
@@ -71,15 +72,14 @@ class SaleDetailView(LoginRequiredMixin, generic.DetailView):
 class SaleUpdateView(LoginRequiredMixin, generic.UpdateView):
     template_name = "sales/sale_update.html"
     form_class = SaleModelForm
-
+    queryset = Sale.objects.all()
     def get_queryset(self):
         user = self.request.user
         if user.is_admin:
-            queryset = Sale.objects.all()
+            queryset = queryset
         elif user.is_organiser:
-            queryset = Sale.objects.filter(oraganisation=user.userprofile)
+            queryset = queryset.filter(oraganisation=user.userprofile)
         else:
-            queryset = Sale.objects.filter(oraganisation=user.agent.oraganisation)
             queryset = queryset.filter(agent__user=self.request.user)
         return queryset
 

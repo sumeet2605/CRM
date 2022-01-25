@@ -55,84 +55,91 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
         thirty_days_ago = datetime.date.today() - datetime.timedelta(days=30)
         converted_category = Category.objects.get(name="Converted")
         card_out_category = SaleCategory.objects.get(name="Card Out")
+        lead=Lead.objects.all()
+        sale=Sale.objects.all()
         # How many leads we have in total
         if user.is_admin:
-            total_lead_count = Lead.objects.all().count()
-            total_sale_count = Sale.objects.all().count()
+            
+            total_lead_count = lead.count()
+            total_sale_count = sale.count()
+            total_lead_count_today = lead.filter(Created_at=datetime.date.today()).count() 
         
             # How many new leads in the last 30 days
             
-            total_in_past30 = Lead.objects.filter(
+            total_in_past30 = lead.filter(
                 Created_at__gte=thirty_days_ago
             ).count()
-            total_sale_in_past30 = Sale.objects.filter(
+            total_sale_in_past30 = sale.filter(
                 Created_at__gte=thirty_days_ago
             ).count()
             # How many converted leads in the last 30 days
-            converted_category = Category.objects.get(name="Converted")
             
-            converted_in_past30 = Lead.objects.filter(
+            
+            converted_in_past30 = lead.filter(
                 category=converted_category,
                 converted_date__gte=thirty_days_ago
             ).count()
 
-            card_out_in_past30 = Sale.objects.filter(
+            card_out_in_past30 = sale.filter(
                 category=card_out_category,
                 Last_Upated__gte=thirty_days_ago
             ).count()    
+        
         elif user.is_organiser:    
-            total_lead_count = Lead.objects.filter(oraganisation=user.userprofile).count()
-            total_sale_count = Sale.objects.filter(oraganisation=user.userprofile).count() 
+            total_lead_count = lead.filter(oraganisation=user.userprofile).count()
+            total_sale_count = sale.filter(oraganisation=user.userprofile).count() 
+            total_lead_count_today = lead.filter(Created_at=datetime.date.today()).count()
             # How many new leads in the last 30 days
             
-            total_in_past30 = Lead.objects.filter(
+            total_in_past30 = lead.filter(
                 oraganisation=user.userprofile,
                 Created_at__gte=thirty_days_ago
             ).count()
 
             # How many converted leads in the last 30 days
-            converted_in_past30 = Lead.objects.filter(
+            converted_in_past30 = lead.filter(
                 oraganisation=user.userprofile,
                 category=converted_category,
                 converted_date__gte=thirty_days_ago
             ).count()
 
-            total_sale_in_past30 = Sale.objects.filter(
+            total_sale_in_past30 = sale.filter(
                 oraganisation=user.userprofile,
                 Created_at__gte=thirty_days_ago
             ).count()
 
             # How many converted leads in the last 30 days
-            card_out_in_past30 = Sale.objects.filter(
+            card_out_in_past30 = sale.filter(
                 oraganisation=user.userprofile,
                 category=card_out_category,
                 converted_date__gte=thirty_days_ago
             ).count()
 
         else:
-            total_lead_count = Lead.objects.filter(agent__user=user).count()
-            total_sale_count = Sale.objects.filter(agent__user=user).count() 
+            total_lead_count = lead.filter(agent__user=user).count()
+            total_sale_count = sale.filter(agent__user=user).count()
+            total_lead_count_today = lead.filter(Created_at=datetime.date.today()).count()
             # How many new leads in the last 30 days
             
-            total_in_past30 = Lead.objects.filter(
+            total_in_past30 = lead.filter(
                 agent__user=user ,
                 Created_at__gte=thirty_days_ago
             ).count()
 
             # How many converted leads in the last 30 days
-            converted_in_past30 = Lead.objects.filter(
+            converted_in_past30 = lead.filter(
                 agent__user=user,
                 category=converted_category,
                 converted_date__gte=thirty_days_ago
             ).count()
 
-            total_sale_in_past30 = Sale.objects.filter(
+            total_sale_in_past30 = sale.filter(
                 agent__user=user,
                 Created_at__gte=thirty_days_ago
             ).count()
 
             # How many converted leads in the last 30 days
-            card_out_in_past30 = Sale.objects.filter(
+            card_out_in_past30 = sale.filter(
                 agent__user=user,
                 category=card_out_category,
                 converted_date__gte=thirty_days_ago
@@ -144,7 +151,8 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
             "converted_in_past30": converted_in_past30,
             "total_sale_count":total_sale_count,
             "total_sale_in_past30": total_sale_in_past30,
-            "card_out_in_past30": card_out_in_past30
+            "card_out_in_past30": card_out_in_past30,
+            "total_lead_count_today": total_lead_count_today
             
         })
         return context
@@ -218,7 +226,7 @@ class LeadCreateView(LoginRequiredMixin, generic.CreateView):
         lead = form.save(commit=False)
         lead.agent = Agent.objects.get(user_id=self.request.user)
         lead.oraganisation = self.request.user.userprofile
-        lead.updated_by=""
+        lead.updated_by=Agent.objects.get(user_id=self.request.user)
         lead.save()
         messages.success(self.request, "You have successfully created a lead")
         return super(LeadCreateView, self).form_valid(form)
@@ -432,6 +440,8 @@ class FollowUpCreateView(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         lead = Lead.objects.get(pk=self.kwargs["pk"])
+        lead.Updated_by = Agent.objects.get(user_id=self.request.user)
+        lead.save()
         followup = form.save(commit=False)
         followup.lead = lead
         followup.save()
@@ -457,6 +467,15 @@ class FollowUpUpdateView(LoginRequiredMixin, generic.UpdateView):
 
     def get_success_url(self):
         return reverse("leads:lead-detail", kwargs={"pk": self.get_object().lead.id})
+
+    def form_valid(self, form):
+        lead = Lead.objects.get(pk=self.kwargs["pk"])
+        lead.Updated_by = Agent.objects.get(user_id=self.request.user)
+        lead.save()
+        followup = form.save(commit=False)
+        followup.lead = lead
+        followup.save()
+        return super(FollowUpUpdateView, self).form_valid(form)
 
 
 class FollowUpDeleteView(OraganiserAndLoginRequiredMixin, generic.DeleteView):

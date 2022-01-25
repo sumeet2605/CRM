@@ -1,12 +1,15 @@
 import random
+from datetime import date
 from django.shortcuts import render, reverse
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
-from leads.models import Agent
+from leads.models import Agent, Lead
 from .forms import AgentModelForm
 from .mixin import OraganiserAndLoginRequiredMixin
 # Create your views here.
+
+year = date.today().year
 
 class AgentListView(OraganiserAndLoginRequiredMixin, generic.ListView):
     template_name = "agents/agent_list.html"
@@ -31,6 +34,18 @@ class AgentDetailView(OraganiserAndLoginRequiredMixin, generic.DetailView):
         else:
             organisation = self.request.user.userprofile
             return Agent.objects.filter(oraganisation=organisation)
+
+    def get_context_data(self, **kwargs):
+        context = super(AgentDetailView, self).get_context_data(**kwargs)
+        agent = Agent.objects.get(id=self.kwargs["pk"])
+        lead_count_total = Lead.objects.filter(agent=agent).count()
+        print(lead_count_total)
+        context.update({
+            'lead_count_total':lead_count_total
+        })
+
+        return context
+
 
 
 class AgentCreateView(OraganiserAndLoginRequiredMixin, generic.CreateView):
