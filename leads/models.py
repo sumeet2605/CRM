@@ -88,6 +88,7 @@ class Lead(models.Model):
     First_Name = models.CharField(max_length=20, null=True, blank=True)
     Last_Name = models.CharField(max_length=20, null=True, blank=True)
     Phone_Number = models.CharField(max_length=10, null=True, blank=True)
+    Email = models.EmailField(null=True, blank=True)
     Call_Status = models.CharField(max_length=30, choices=CALLSTATUS, null=True, blank=True)
     Bank_Name = models.CharField(max_length=20, null=True, choices=BANKNAME, blank=True)
     Application_Type = models.CharField(max_length=30, null=True, choices=APPLICACTIONTYPE, blank=True)
@@ -98,7 +99,7 @@ class Lead(models.Model):
     oraganisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     agent = models.ForeignKey("Agent", on_delete=models.SET_NULL, null=True, blank=True)
     category = models.ForeignKey("Category", related_name="leads", null=True, on_delete=models.SET_NULL)
-    converted_date = models.DateTimeField(null=True, blank=True)
+    converted_date = models.DateField(null=True, blank=True)
 
     objects = LeadManager()
    
@@ -153,21 +154,22 @@ class Sale(models.Model):
     Bank_Name = models.CharField(max_length=20)
     Remarks = models.CharField(max_length = 40, blank=True)
     Application_Number= models.CharField(max_length=30, blank=True, null=True)
-    Created_at = models.DateTimeField(auto_now_add=True)
+    Created_at = models.DateField(auto_now_add=True)
     updated_by = models.ForeignKey(Agent, related_name="saleupdate", on_delete=models.SET_NULL, null=True, blank=True)
-    Last_Upated = models.DateTimeField(auto_now=True)
+    Last_Upated = models.DateField(auto_now=True)
     oraganisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     agent = models.ForeignKey("Agent", on_delete=models.SET_NULL, null=True)
     category = models.ForeignKey("SaleCategory", related_name="sales", null=True, on_delete=models.SET_NULL)
     description = models.TextField(null=True, blank=True)
     profile_picture = models.ImageField(null=True, blank=True, upload_to="profile_pictures/")
-    converted_date = models.DateTimeField(null=True, blank=True)
+    converted_date = models.DateField(null=True, blank=True)
 
     objects = LeadManager()
    
 
     def __str__(self):
         return f"{self.First_Name} {self.Last_Name}"
+
 
 def handle_upload_documents(instance, filename):
         return f"sale_documents/sale_{instance.sale.pk}/{filename}"
@@ -227,7 +229,7 @@ def post_lead_created_signal(sender, instance, created, **kwargs):
                 agent=instance.agent,
                 category=SaleCategory.objects.get(name="Documentation"),
                 description = "",
-                converted_date=datetime.now(),
+                converted_date=date.today(),
             )
 
 post_save.connect(post_user_created_signal, sender=User)
