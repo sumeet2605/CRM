@@ -38,6 +38,7 @@ class AgentDetailView(OraganiserAndLoginRequiredMixin, generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super(AgentDetailView, self).get_context_data(**kwargs)
         agent = Agent.objects.get(id=self.kwargs["pk"])
+        
         lead_count_total = Lead.objects.filter(agent=agent).count()
         print(lead_count_total)
         context.update({
