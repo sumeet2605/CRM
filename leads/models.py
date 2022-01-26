@@ -88,7 +88,6 @@ class Lead(models.Model):
     First_Name = models.CharField(max_length=20, null=True, blank=True)
     Last_Name = models.CharField(max_length=20, null=True, blank=True)
     Phone_Number = models.CharField(max_length=10, null=True, blank=True)
-    Email = models.EmailField(null=True, blank=True)
     Call_Status = models.CharField(max_length=30, choices=CALLSTATUS, null=True, blank=True)
     Bank_Name = models.CharField(max_length=20, null=True, choices=BANKNAME, blank=True)
     Application_Type = models.CharField(max_length=30, null=True, choices=APPLICACTIONTYPE, blank=True)
