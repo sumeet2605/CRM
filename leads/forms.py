@@ -25,6 +25,7 @@ class LeadModelForm(forms.ModelForm):
             'Call_Status',
             'First_Name',
             'Last_Name',
+            'Email',
             'Bank_Name',
             'Remarks',
         )
