@@ -415,15 +415,6 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
             queryset = queryset.filter(agent__user=user)
         return queryset
 
-    def get_success_url(self):
-        lead = self.get_object()
-        converted_category = Category.objects.get(name="Converted")
-        sale = Sale.objects.get(lead=lead)
-        if lead.category == converted_category:
-            return reverse("sales:sale-update", kwargs={"pk": sale.id} )
-        else:
-            return reverse("leads:lead-detail", kwargs={"pk": self.get_object().id})
-
     def form_valid(self, form):
         lead_before_update = self.get_object()
         instance = form.save(commit=False)
@@ -436,10 +427,14 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
         instance.save()
         return super(LeadCategoryUpdateView, self).form_valid(form)
 
-    def create_sale(self):
+    def get_success_url(self):
         lead = self.get_object()
-        print(lead)
-
+        converted_category = Category.objects.get(name="Converted")
+        sale = Sale.objects.get(lead=lead)
+        if lead.category == converted_category:
+            return reverse("sales:sale-update", kwargs={"pk": sale.id} )
+        else:
+            return reverse("leads:lead-detail", kwargs={"pk": self.get_object().id})
 
 class FollowUpCreateView(LoginRequiredMixin, generic.CreateView):
     template_name = "leads/followup_create.html"
