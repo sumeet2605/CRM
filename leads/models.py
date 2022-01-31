@@ -139,7 +139,7 @@ class Sale(models.Model):
     lead = models.OneToOneField(Lead, on_delete=models.CASCADE, null=True, blank=True)
     Application_Type = models.CharField(max_length=30, null=True, choices=APPLICACTIONTYPE, blank=True)
     First_Name = models.CharField(max_length=20)
-    Last_Name = models.CharField(max_length=20)
+    Last_Name = models.CharField(max_length=20, null=True)
     Fater_Name = models.CharField(max_length=40, null=True)
     Mother_Name = models.CharField(max_length=40, null=True)
     Date_of_Birth = models.DateField(null=True)
