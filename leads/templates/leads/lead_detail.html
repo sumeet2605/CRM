@@ -52,10 +52,6 @@
                     <span class="ml-auto text-gray-900">{{ lead.Bank_Name }}</span>
                 </div>
                 <div class="flex border-t border-gray-300 py-2">
-                    <span class="text-gray-500">Application Type</span>
-                    <span class="ml-auto text-gray-900">{{ lead.Application_Type }}</span>
-                </div>
-                <div class="flex border-t border-gray-300 py-2">
                     <span class="text-gray-500">Remarks</span>
                     <span class="ml-auto text-gray-900">{{ lead.Remarks }}</span>
                 </div>
@@ -76,32 +72,32 @@
                     <span class="ml-auto text-gray-900">{{ lead.Updated_by }}</span>
                 </div>
             </div>
-
-        <a href="{% url 'leads:lead-followup-create' lead.pk %}" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Add a followup</a>
-
         </div>
-
-        {% for followup in lead.followups.all %}
-            <div class="mt-5 shadow px-4 sm:px-6">
-                <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="text-sm font-medium text-gray-500">
-                    Notes (<a href="{% url 'leads:lead-followup-update' followup.pk %}" class="text-blue-500 hover:text-blue-700">update</a>)
-                    </dt>
-                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    {{ followup.notes }}
-                    </dd>
+        {% if lead.followups.exists %}             
+            {% for followup in lead.followups.all %}
+                <div class="mt-5 shadow px-4 sm:px-6">
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                        <dt class="text-sm font-medium text-gray-500">
+                        Notes (<a href="{% url 'leads:lead-followup-update' followup.pk %}" class="text-blue-500 hover:text-blue-700">update</a>)
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        {{ followup.notes }}
+                        </dd>
+                    </div>
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                        <dt class="text-sm font-medium text-gray-500">
+                        Followup Date (<a href="{% url 'leads:lead-followup-update' followup.pk %}" class="text-blue-500 hover:text-blue-700">update</a>)
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        {{ followup.follow_up_date }}
+                        </dd>
+                    </div>
                 </div>
-                <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="text-sm font-medium text-gray-500">
-                    Followup Date (<a href="{% url 'leads:lead-followup-update' followup.pk %}" class="text-blue-500 hover:text-blue-700">update</a>)
-                    </dt>
-                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    {{ followup.follow_up_date }}
-                    </dd>
-                </div>
-            </div>
-        {% endfor %}
-
+            {% endfor %}
+        {% else %}
+            <a href="{% url 'leads:lead-followup-create' lead.pk %}" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Add a followup</a>
+    
+        {% endif %}
 
         
 

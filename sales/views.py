@@ -5,8 +5,24 @@ from django.contrib import messages
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
-from leads.models import Sale, Category, SaleCategory, Document
-from .forms import SaleModelForm, SaleCategoryModelForm, SaleCategoryUpdateForm, DocumentCreateForm, Card2CardForm, SalariedForm
+from leads.models import (
+    Sale, 
+    Category, 
+    SaleCategory, 
+    Document, 
+    KYCDocument, 
+    SalarySlip, 
+    BankStatement, 
+    C2CDocument,
+)
+from .forms import (
+    SaleModelForm, 
+    SaleCategoryModelForm, 
+    SaleCategoryUpdateForm, 
+    DocumentCreateForm, 
+    Card2CardForm, 
+    SalariedForm,
+    )
 from agents.mixin import OraganiserAndLoginRequiredMixin
 
 
@@ -19,7 +35,7 @@ class SaleListView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         user = self.request.user
         queryset = Sale.objects.all()
-        print(user.agent.oraganisation)
+        
         if user.is_admin:
             queryset = queryset
         elif user.is_organiser:
@@ -65,15 +81,34 @@ class SaleDetailView(LoginRequiredMixin, generic.DetailView):
             
             queryset = queryset.filter(agent__user=user)
         
-        
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(SaleDetailView, self).get_context_data(**kwargs)
+        
+        queryset = Document.objects.filter(sale=self.kwargs["pk"])
+        doc = {}
+        card ={}
+        for d in queryset:
+            doc  = KYCDocument.objects.filter(document=d)
+            
+        for c2c in queryset:
+            card = C2CDocument.objects.filter(document=c2c)
+
+        context.update({
+            "document": queryset,
+            "doc": doc,
+            "card": card
+        })
+        return context
 
 
 class SaleUpdateView(LoginRequiredMixin, generic.UpdateView):
     template_name = "sales/sale_update.html"
     form_class = SaleModelForm
-    queryset = Sale.objects.all()
+    
     def get_queryset(self):
+        queryset = Sale.objects.all()
         user = self.request.user
         if user.is_admin:
             queryset = queryset
@@ -243,9 +278,68 @@ class DocumentCreateView(LoginRequiredMixin, generic.CreateView):
         sale = Sale.objects.get(pk=self.kwargs["pk"])
         documents = form.save(commit=False)
         documents.sale = sale
+        files = self.request.FILES.getlist('kyc_documents')
+        documents.save()
+        doc = Document.objects.get(sale=sale)
         if self.request.FILES:
-            for f in self.request.FILES.getlist('kyc_documents'):
-                print(f)
+            for f in files:
+               KYCDocument.objects.create(document=doc, kyc_document=f)
             
         return super(DocumentCreateView, self).form_valid(form)
 
+class Card2CardCreateView(LoginRequiredMixin, generic.CreateView):
+    template_name = "sales/document_create.html"
+    form_class = Card2CardForm  
+
+    def get_success_url(self):
+        return reverse("sales:sale-list")
+
+    def get_context_data(self, **kwargs):
+        context = super(Card2CardCreateView, self).get_context_data(**kwargs)
+        context.update({
+            "lead": Sale.objects.get(pk=self.kwargs["pk"])
+        })
+        return context
+
+    def form_valid(self, form):
+        sale = Sale.objects.get(pk=self.kwargs["pk"])
+        documents = form.save(commit=False)
+        doc = Document.objects.get(sale=sale)
+        documents.document = doc
+        documents.save()       
+            
+        return super(Card2CardCreateView, self).form_valid(form)
+
+
+class SalariedCreateView(LoginRequiredMixin, generic.CreateView):
+    template_name = "sales/document_create.html"
+    form_class = SalariedForm  
+
+    def get_success_url(self):
+        return reverse("sales:sale-list")
+
+    def get_context_data(self, **kwargs):
+        context = super(Card2CardCreateView, self).get_context_data(**kwargs)
+        context.update({
+            "lead": Sale.objects.get(pk=self.kwargs["pk"])
+        })
+        return context
+
+    def form_valid(self, form):
+        
+        sale = Sale.objects.get(pk=self.kwargs["pk"])
+        documents = form.save(commit=False)
+        doc = Document.objects.get(sale=sale)
+        documents.sale = sale
+        files = self.request.FILES.getlist('salary_slips')
+        files1 = self.request.FILES.getlist('bank_statements')
+        documents.save()
+        doc = Document.objects.get(sale=sale)
+        if self.request.FILES:
+            for f in files:
+               SalarySlip.objects.create(document=doc, salary_slip=f)
+
+            for f in files1:
+                BankStatement.objects.create(document=doc, bank_statement=f)
+            
+        return super(SalariedCreateView, self).form_valid(form)

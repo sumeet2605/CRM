@@ -10,6 +10,8 @@ from .views import (
     CategoryUpdateView, 
     SaleCategoryDeleteView,
     DocumentCreateView,
+    Card2CardCreateView,
+    SalariedCreateView,
     
 )
 
@@ -27,5 +29,7 @@ urlpatterns = [
     path('categories/<int:pk>/update/', CategoryUpdateView.as_view(), name='category-update'),
     path('categories/<int:pk>/delete/', SaleCategoryDeleteView.as_view(), name='category-delete'),
     path('create-category/', SaleCategoryCreateView.as_view(), name='category-create'),
-    path('<int:pk>/documents/', DocumentCreateView.as_view(),name='documents-update') 
+    path('<int:pk>/documents/', DocumentCreateView.as_view(),name='documents-update'),
+    path('<int:pk>/documents/card2card', Card2CardCreateView.as_view(), name='card2card-create'),
+    path('<int:pk>/documents/salaried', SalariedCreateView.as_view(), name='salaried-create') 
 ]

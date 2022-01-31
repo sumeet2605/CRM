@@ -81,7 +81,6 @@ class Lead(models.Model):
         ('HDFC', 'HDFC BANK'),('Kotak', 'Kotak Bank'),('SBI', 'SBI Bank'),('Yes', 'Yes Bank'),('CITI', 'CITI Bank'), ('TATA', 'Tata Capital'),
     )
 
-    APPLICACTIONTYPE = (('C2C', 'Card 2 Card'),('Salary', 'Salaried'),('ITR', 'ITR'),)
     
     Source = models.CharField(max_length=15, choices=SOURCE)
     Product = models.CharField(max_length=20, choices=PRODUCT)
@@ -91,7 +90,6 @@ class Lead(models.Model):
     Email = models.EmailField(null=True, blank=True)
     Call_Status = models.CharField(max_length=30, choices=CALLSTATUS, null=True, blank=True)
     Bank_Name = models.CharField(max_length=20, null=True, choices=BANKNAME, blank=True)
-    Application_Type = models.CharField(max_length=30, null=True, choices=APPLICACTIONTYPE, blank=True)
     Remarks = models.CharField(null = True, max_length = 40, blank=True)
     Created_at = models.DateField(auto_now_add=True)
     Updated_by = models.ForeignKey("Agent", related_name="update", on_delete=models.SET_NULL, null=True, blank=True)
@@ -135,7 +133,11 @@ class SaleCategory(models.Model):
         return self.name
 
 class Sale(models.Model):
+    APPLICACTIONTYPE = (('C2C', 'Card 2 Card'),('Salary', 'Salaried'),('ITR', 'ITR'),)
+    
+    
     lead = models.OneToOneField(Lead, on_delete=models.CASCADE, null=True, blank=True)
+    Application_Type = models.CharField(max_length=30, null=True, choices=APPLICACTIONTYPE, blank=True)
     First_Name = models.CharField(max_length=20)
     Last_Name = models.CharField(max_length=20)
     Fater_Name = models.CharField(max_length=40, null=True)
@@ -175,21 +177,37 @@ def handle_upload_documents(instance, filename):
         return f"sale_documents/sale_{instance.sale.pk}/{filename}"
 
 class Document(models.Model):
-    sale = models.OneToOneField(Sale, on_delete=models.CASCADE, null=True, blank=True)
+    sale = models.OneToOneField(Sale, related_name="sale", on_delete=models.CASCADE, null=True, blank=True)
     photo = models.ImageField(null=True, blank=True, upload_to=handle_upload_documents)
     pan_card = models.FileField(null=True, blank=True, upload_to=handle_upload_documents)
-    kyc_documents = models.FileField(null=True, blank=True, upload_to=handle_upload_documents)
-    card_copy = models.ImageField(null=True, blank=True, upload_to=handle_upload_documents)
-    card_statement = models.FileField(null=True, blank=True, upload_to=handle_upload_documents)
     company_id = models.ImageField(null=True, blank=True, upload_to=handle_upload_documents)
-    salary_slips = models.FileField(null=True, blank=True, upload_to=handle_upload_documents)
-    bank_statement = models.FileField(null=True, blank=True, upload_to=handle_upload_documents)
-
+    
 
     def __str__(self):
         return f"{self.sale.First_Name} {self.sale.Last_Name}"
 
+def handle_upload_kyc(instance, filename):
+        return f"sale_documents/sale_{instance.document.sale.pk}/{filename}"
     
+class KYCDocument(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    kyc_document = models.FileField(upload_to=handle_upload_kyc, null=True, blank=True)
+    
+
+class C2CDocument(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    card_copy = models.ImageField(null=True, blank=True, upload_to=handle_upload_kyc)
+    card_statement = models.FileField(null=True, blank=True, upload_to=handle_upload_kyc)
+    
+    
+
+class SalarySlip(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    salary_slip = models.FileField(upload_to=handle_upload_kyc, null=True, blank=True)
+
+class BankStatement(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    bank_statement = models.FileField(upload_to=handle_upload_kyc, null=True, blank=True)
 
 
 

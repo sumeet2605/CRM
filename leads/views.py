@@ -63,7 +63,7 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
             total_lead_count = lead.count()
             total_sale_count = sale.count()
             total_lead_count_today = lead.filter(Created_at=datetime.date.today()).count() 
-        
+            total_sale_count_today = sale.filter(Created_at=datetime.date.today()).count()
             # How many new leads in the last 30 days
             
             total_in_past30 = lead.filter(
@@ -88,7 +88,13 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
         elif user.is_organiser:    
             total_lead_count = lead.filter(oraganisation=user.userprofile).count()
             total_sale_count = sale.filter(oraganisation=user.userprofile).count() 
-            total_lead_count_today = lead.filter(Created_at=datetime.date.today()).count()
+            total_lead_count_today = lead.filter(
+                oraganisation=user.userprofile,
+                Created_at=datetime.date.today()).count()
+
+            total_sale_count_today = sale.filter(
+                oraganisation=user.userprofile,
+                Created_at=datetime.date.today()).count()
             # How many new leads in the last 30 days
             
             total_in_past30 = lead.filter(
@@ -118,7 +124,12 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
         else:
             total_lead_count = lead.filter(agent__user=user).count()
             total_sale_count = sale.filter(agent__user=user).count()
-            total_lead_count_today = lead.filter(Created_at=datetime.date.today()).count()
+            total_lead_count_today = lead.filter(
+                agent__user=user,
+                Created_at=datetime.date.today()).count()
+            total_sale_count_today = sale.filter(
+                agent__user=user,
+                Created_at=datetime.date.today()).count()
             # How many new leads in the last 30 days
             
             total_in_past30 = lead.filter(
@@ -152,7 +163,8 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
             "total_sale_count":total_sale_count,
             "total_sale_in_past30": total_sale_in_past30,
             "card_out_in_past30": card_out_in_past30,
-            "total_lead_count_today": total_lead_count_today
+            "total_lead_count_today": total_lead_count_today,
+            "total_sale_count_today": total_sale_count_today,
             
         })
         return context
@@ -319,16 +331,15 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
                 oraganisation=user.agent.oraganisation
             )
         
-        # print(queryset.filter([Q(category=category) for category in categories]))
+        
         context_category= {}
         
-        # print(categories) 
+        
 
         for c in categories:
             context_category[c] = queryset.filter(category=c).count()
         
-        # print(context_category)
-        # print(queryset.filter([Q(category=category) for category in categories]))
+        
         
         context.update({
                 "unassigned_lead_count": queryset.filter(category__isnull=True).count(),
@@ -405,7 +416,13 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
         return queryset
 
     def get_success_url(self):
-        return reverse("leads:lead-detail", kwargs={"pk": self.get_object().id})
+        lead = self.get_object()
+        converted_category = Category.objects.get(name="Converted")
+        sale = Sale.objects.get(lead=lead)
+        if lead.category == converted_category:
+            return reverse("sales:sale-update", kwargs={"pk": sale.id} )
+        else:
+            return reverse("leads:lead-detail", kwargs={"pk": self.get_object().id})
 
     def form_valid(self, form):
         lead_before_update = self.get_object()

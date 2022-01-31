@@ -1,10 +1,19 @@
 from django import forms
-from leads.models import Sale, SaleCategory, Document
+from leads.models import (
+    Sale, 
+    SaleCategory, 
+    Document, 
+    KYCDocument, 
+    SalarySlip, 
+    BankStatement, 
+    C2CDocument,
+)
 
 class SaleModelForm(forms.ModelForm):
     class Meta:
         model = Sale
         fields = (
+            'Application_Type',
             'First_Name',
             'Last_Name',
             'Fater_Name',
@@ -53,19 +62,13 @@ class DocumentCreateForm(forms.ModelForm):
         fields = [
             'photo',
             'pan_card',
-            'kyc_documents',
         ]
         
-
-
             
 class Card2CardForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['card_statement'] = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
-
+    
     class Meta:
-        model = Document
+        model = C2CDocument
         fields = [
             'card_copy',
             'card_statement',
@@ -76,12 +79,10 @@ class SalariedForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['salary_slips'] = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
-        self.fields['bank_statement'] = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
+        self.fields['bank_statements'] = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
     
     class Meta:
         model = Document
         fields = [
-            'company_id',
-            'salary_slips',
-            'bank_statement'
+            'company_id',            
         ]
