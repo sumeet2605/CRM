@@ -13,9 +13,11 @@
                         </div>
                         <p class="mt-1 text-xl text-gray-500 truncate">{{ lead.description }}</p>
                     </div>
-                    {% if lead.profile_picture %}
-                    <img class="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0" src="{{ lead.profile_picture.url }}" alt="">
+                    {% for d in document %}    
+                    {% if d.photo %}
+                    <img class="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0" src="{{ d.photo.url }}" alt="">
                     {% endif %}
+                    {% endfor %}
                 </div>
                 <div class="flex mb-4">
                     <a href="{% url 'sales:sale-detail' lead.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">
@@ -119,73 +121,12 @@
             </div>
 
         </div>
-        {% if document.exists %}   
+        {% if document.exists %} 
+           
             {% for d in document %}
-
-                <div class="mt-5 shadow px-4 sm:px-6">
-                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="text-sm font-medium text-gray-500">
-                    Photo (<a href="#" class="text-blue-500 hover:text-blue-700">update</a>)
-                    </dt>
-                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    {{ d.photo }}
-                    </dd>
-                    </div>
-                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="text-sm font-medium text-gray-500">
-                    Pan Card (<a href="#" class="text-blue-500 hover:text-blue-700">update</a>)
-                    </dt>
-                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    {{ d.pan_card }}
-                    </dd>
-                    </div>
-                {% if doc.exists %}
-                    {% for do in doc %}
-                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                        <dt class="text-sm font-medium text-gray-500">
-                        KYC Document (<a href="#" class="text-blue-500 hover:text-blue-700">update</a>)
-                        </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        {{ do.kyc_document }}
-                        </dd>
-                        </div>
-                    {% endfor %}
-                {% endif %}        
+                 <a href="{% url 'docs:doc-detail' d.pk %}" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">View Documents</a>
                 
-                {% if lead.Application_Type == "C2C" %}
-                    {% if card.exists %} 
-                        {% for c in card %}
-                            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500">
-                            Card Copy (<a href="#" class="text-blue-500 hover:text-blue-700">update</a>)
-                            </dt>
-                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                            {{ c.card_copy }}
-                            </dd>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <a href="{% url 'sales:card2card-create' lead.pk %}" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Add Card Documents</a>
-                    {% endif %}
-                {% elif lead.Application_Type == "Salary" %}
-                    {% if card.exists %} 
-                        {% for c in card %}
-                            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500">
-                            Card Copy (<a href="#" class="text-blue-500 hover:text-blue-700">update</a>)
-                            </dt>
-                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                            {{ c.card_copy }}
-                            </dd>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <a href="{% url 'sales:salaried-create' lead.pk %}" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Add Salaried Documents</a>
-                    {% endif %}
-                {% else %}
-                    <h3 class="text-xl text-gray-900 font-medium truncate">Application Type not Updated, Please Update.</h3>    
-                {% endif %}
-                </div>
+                
             {% endfor %}
                 
         {% else %}

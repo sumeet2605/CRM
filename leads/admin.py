@@ -13,7 +13,9 @@ from .models import (
     SaleCategory, 
     Document, 
     KYCDocument,
-    C2CDocument
+    C2CDocument,
+    SalarySlip,
+    BankStatement
 )
 
 
@@ -43,3 +45,5 @@ admin.site.register(SaleCategory)
 admin.site.register(Document)
 admin.site.register(KYCDocument)
 admin.site.register(C2CDocument)
+admin.site.register(SalarySlip)
+admin.site.register(BankStatement)

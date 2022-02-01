@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load tailwind_filters %}
+
+{% block content %}
+<script>
+  $(document).ready(function(){
+    $('#id_file').attr("multiple","true");
+
+  })
+ </script>
+<div class="max-w-lg mx-auto">
+    <a class="hover:text-blue-500" href="{% url 'sales:sale-list' %}">Go back to Sales</a>
+    <div class="py-5 border-t border-gray-200">
+        <h1 class="text-4xl text-gray-800">Upload Documents for Sale</h1>
+    </div>
+    <div class="py-5 border-t border-gray-200">
+        <h2 class="text-xl text-gray-800">Only Upload if you have all the Required Documents</h2>
+    </div>
+    <form method="post" class="mt-5" enctype="multipart/form-data" action="">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">
+            Upload
+        </button>
+    </form>
+</div>
+
+{% endblock content %}

@@ -163,7 +163,6 @@ class Sale(models.Model):
     agent = models.ForeignKey("Agent", on_delete=models.SET_NULL, null=True)
     category = models.ForeignKey("SaleCategory", related_name="sales", null=True, on_delete=models.SET_NULL)
     description = models.TextField(null=True, blank=True)
-    profile_picture = models.ImageField(null=True, blank=True, upload_to="profile_pictures/")
     converted_date = models.DateField(null=True, blank=True)
 
     objects = LeadManager()

@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="text-gray-700 body-font overflow-hidden">
+    <div class="container px-5 py-24 mx-auto">
+        <div class="lg:w-4/5 mx-auto flex flex-wrap">
+            <div class="w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+                <div class="w-full flex items-center justify-between space-x-6">
+                    <div class="flex-1 truncate">
+                        <div class="flex items-center space-x-3">
+                            <h3 class="text-3xl text-gray-900 font-medium truncate">{{ docs.sale.First_Name }} {{ docs.sale.Last_Name }}</h3>
+                        </div>
+                        
+                    </div>
+                    {% if docs.sale.profile_picture %}
+                    <img class="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0" src="{{ docs.sale.profile_picture.url }}" alt="">
+                    {% endif %}
+                </div>
+                <div class="flex mb-4">
+                    <a href="#" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">
+                        Overview
+                    </a>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Application Type</span>
+                    <span class="ml-auto text-gray-900">{{ docs.sale.Application_Type }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                    <span class="text-gray-500">Bank Name</span>
+                    <span class="ml-auto text-gray-900">{{ docs.sale.Bank_Name }}</span>
+                </div>
+                <div class="flex border-t border-gray-300 py-2">
+                <dt class="text-sm font-medium text-gray-500">
+                        Photo
+                        </dt>
+                        <dd class="ml-auto mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
+                            <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                                <div class=" flex-1 flex items-center">
+                                    <img class="ml-auto w-12 h-12 bg-gray-300 flex-shrink-0" src="{{ docs.photo.url }}" alt="">
+                                </div>
+                                <div class="ml-4 flex-shrink-0">
+                                    <a href="{{ doc.photo.url }}" download class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Download
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                        </dd>
+                     </div>
+                 <div class="flex border-t border-gray-300 py-2">
+                <dt class="text-sm font-medium text-gray-500">
+                        Pan Card
+                        </dt>
+                        <dd class="ml-auto mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
+                            <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                                <div class=" flex-1 flex items-center">
+                                    <img class="ml-auto w-12 h-40 bg-gray-300 flex-shrink-0" src="{{ docs.pan_card.url }}" alt="">
+                                </div>
+                                <div class="ml-4 flex-shrink-0">
+                                    <a href="{{ doc.pan_card.url }}" download class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Download
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                        </dd>    
+                </div>
+                {% if doc.exists %}
+                    {% for do in doc %}
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                        <dt class="text-sm font-medium text-gray-500">
+                        Kyc Documents
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
+                            <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                                <div class="w-0 flex-1 flex items-center">
+                                    <!-- Heroicon name: paper-clip -->
+                                    <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="ml-2 flex-1 w-0 truncate">
+                                    {{ do.kyc_document.name }}
+                                    </span>
+                                </div>
+                                <div class="ml-4 flex-shrink-0">
+                                    <a href="{{ do.kyc_document.url }}" download class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Download
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                        </dd>
+                    </div>
+                
+                    {% endfor %}
+                {% endif %}        
+                
+                {% if docs.sale.Application_Type == "C2C" %}
+                    {% if card.exists %} 
+                        {% for c in card %}
+                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                        <dt class="text-sm font-medium text-gray-500">
+                        Card Documents
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
+                            <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                                <div class="w-0 flex-1 flex items-center">
+                                    <!-- Heroicon name: paper-clip -->
+                                    <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="ml-2 flex-1 w-0 truncate">
+                                    {{ c.card_copy.name }}
+                                    </span>
+                                </div>
+                                <div class="ml-4 flex-shrink-0">
+                                    <a href="{{ c.card_copy.url }}" download class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Download
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                        </dd>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
+                            <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                                <div class="w-0 flex-1 flex items-center">
+                                    <!-- Heroicon name: paper-clip -->
+                                    <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="ml-2 flex-1 w-0 truncate">
+                                    {{ c.card_statement.name }}
+                                    </span>
+                                </div>
+                                <div class="ml-4 flex-shrink-0">
+                                    <a href="{{ c.card_statement.url }}" download class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Download
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                        </dd>
+                    </div>
+                            
+                        {% endfor %}
+                    {% else %}
+                        <a href="#" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Add Card Documents</a>
+                    {% endif %}
+                {% elif docs.sale.Application_Type == "Salary" %}
+                    {% if salary.exists %}
+                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                        <dt class="text-sm font-medium text-gray-500">
+                        Company ID
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
+                            <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                                <div class="w-0 flex-1 flex items-center">
+                                    <!-- Heroicon name: paper-clip -->
+                                    <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="ml-2 flex-1 w-0 truncate">
+                                    {{ docs.company_id.name }}
+                                    </span>
+                                </div>
+                                <div class="ml-4 flex-shrink-0">
+                                    <a href="{{ docs.company_id.url }}" download class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Download
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                        </dd>
+                        
+                    </div>
+                        {% for s in salary %}
+                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                        <dt class="text-sm font-medium text-gray-500">
+                        Salary Slips
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
+                            <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                                <div class="w-0 flex-1 flex items-center">
+                                    <!-- Heroicon name: paper-clip -->
+                                    <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="ml-2 flex-1 w-0 truncate">
+                                    {{ s.salary_slip.name }}
+                                    </span>
+                                </div>
+                                <div class="ml-4 flex-shrink-0">
+                                    <a href="{{ s.salary_slip.url }}" download class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Download
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                        </dd>
+                        
+                    </div>
+                            
+                        {% endfor %}
+                        {% for b in bank %}
+                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                        <dt class="text-sm font-medium text-gray-500">
+                        Bank Statement
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
+                            <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                                <div class="w-0 flex-1 flex items-center">
+                                    <!-- Heroicon name: paper-clip -->
+                                    <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="ml-2 flex-1 w-0 truncate">
+                                    {{ b.bank_statement.name }}
+                                    </span>
+                                </div>
+                                <div class="ml-4 flex-shrink-0">
+                                    <a href="{{ b.bank_statement.url }}" download class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Download
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                        </dd>
+                        
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                        <a href="{% url 'docs:salaried-create' docs.pk %}" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Add Salaried Documents</a>
+                    {% endif %}
+                {% else %}
+                    <h3 class="text-xl text-gray-900 font-medium truncate">Application Type not Updated, Please Update.</h3>    
+                {% endif %}
+                </div>
+
+            </div>
+
+        </div>
+        
+    </div>
+  </section>
+{% endblock content %}

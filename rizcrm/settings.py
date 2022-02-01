@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'leads',
     'agents',
     'sales',
+    'docs'
 ]
 
 MIDDLEWARE = [
@@ -70,10 +71,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'rizcrm.urls'
-
-FILE_UPLOAD_HANDLERS =[
-    "django.core.files.uploadhandler.MemoryFileUploadHandler",
- "django.core.files.uploadhandler.TemporaryFileUploadHandler"]
 
 TEMPLATES = [
     {

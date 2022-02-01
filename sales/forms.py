@@ -3,9 +3,6 @@ from leads.models import (
     Sale, 
     SaleCategory, 
     Document, 
-    KYCDocument, 
-    SalarySlip, 
-    BankStatement, 
     C2CDocument,
 )
 
@@ -31,7 +28,6 @@ class SaleModelForm(forms.ModelForm):
             'Official_Email',
             'Bank_Name',
             'Remarks',
-            'profile_picture'
         )
         widgets = {'Date_of_Birth': forms.widgets.DateInput(attrs={'type': 'date' })}
 

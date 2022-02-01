@@ -35,6 +35,7 @@ urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('leads/',  include('leads.urls', namespace="leads")),
     path('sales/',  include('sales.urls', namespace="sales")),
+    path('docs/',  include('docs.urls', namespace="docs")),
     path('agents/',  include('agents.urls', namespace="agents")),
     path('signup/', SignupView.as_view(), name='signup'),
     path('reset-password/', PasswordResetView.as_view(), name='reset-password'),

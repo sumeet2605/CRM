@@ -1,4 +1,5 @@
 import random
+import datetime
 from django.shortcuts import render, reverse
 from django.db.models import Q
 from django.contrib import messages
@@ -6,7 +7,8 @@ from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from leads.models import (
-    Sale, 
+    Sale,
+    Agent, 
     Category, 
     SaleCategory, 
     Document, 
@@ -87,18 +89,10 @@ class SaleDetailView(LoginRequiredMixin, generic.DetailView):
         context = super(SaleDetailView, self).get_context_data(**kwargs)
         
         queryset = Document.objects.filter(sale=self.kwargs["pk"])
-        doc = {}
-        card ={}
-        for d in queryset:
-            doc  = KYCDocument.objects.filter(document=d)
-            
-        for c2c in queryset:
-            card = C2CDocument.objects.filter(document=c2c)
+       
 
         context.update({
             "document": queryset,
-            "doc": doc,
-            "card": card
         })
         return context
 
@@ -123,7 +117,7 @@ class SaleUpdateView(LoginRequiredMixin, generic.UpdateView):
 
     def form_valid(self, form):
         sale = form.save(commit=False)
-        sale.updated_by = Agent.objects.get(user_id=self.request.user)
+        sale.updated_by = Agent.objects.get(user=self.request.user)
         sale.save()
         messages.info(self.request, "You have successfully updated this Sale")
         return super(SaleUpdateView, self).form_valid(form)
@@ -311,15 +305,21 @@ class Card2CardCreateView(LoginRequiredMixin, generic.CreateView):
         return super(Card2CardCreateView, self).form_valid(form)
 
 
-class SalariedCreateView(LoginRequiredMixin, generic.CreateView):
+class SalariedCreateView(LoginRequiredMixin, generic.UpdateView):
     template_name = "sales/document_create.html"
     form_class = SalariedForm  
 
     def get_success_url(self):
         return reverse("sales:sale-list")
 
+    def get_queryset(self):
+        user = self.request.user
+        # initial queryset of leads for the entire organisation
+        queryset = Document.objects.get(sale=Sale.objects.get(pk=self.kwargs["pk"]))
+        return queryset
+
     def get_context_data(self, **kwargs):
-        context = super(Card2CardCreateView, self).get_context_data(**kwargs)
+        context = super(SalariedCreateView, self).get_context_data(**kwargs)
         context.update({
             "lead": Sale.objects.get(pk=self.kwargs["pk"])
         })
@@ -334,7 +334,6 @@ class SalariedCreateView(LoginRequiredMixin, generic.CreateView):
         files = self.request.FILES.getlist('salary_slips')
         files1 = self.request.FILES.getlist('bank_statements')
         documents.save()
-        doc = Document.objects.get(sale=sale)
         if self.request.FILES:
             for f in files:
                SalarySlip.objects.create(document=doc, salary_slip=f)
