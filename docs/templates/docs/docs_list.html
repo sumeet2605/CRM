@@ -13,8 +13,8 @@
                         </div>
                         
                     </div>
-                    {% if docs.sale.profile_picture %}
-                    <img class="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0" src="{{ docs.sale.profile_picture.url }}" alt="">
+                    {% if docs.photo %}
+                    <img class="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0" src="{{ docs.photo.url }}" alt="">
                     {% endif %}
                 </div>
                 <div class="flex mb-4">
@@ -34,12 +34,17 @@
                 <dt class="text-sm font-medium text-gray-500">
                         Photo
                         </dt>
-                        <dd class="ml-auto mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
+                        <dd class="ml-auto mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-3">
+                        <ul class="divide-y divide-gray-200">
                             <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
-                                <div class=" flex-1 flex items-center">
-                                    <img class="ml-auto w-12 h-12 bg-gray-300 flex-shrink-0" src="{{ docs.photo.url }}" alt="">
-                                </div>
+                                <div class="mr-auto flex-1 flex items-center">
+                                    <img class="ml-auto w-12 h-40 bg-gray-300 flex-shrink-0" src="{{ docs.photo.url }}" alt="">
+                                </div> </li> 
+                                </ul>
+                                </dd>
+                        <dd class="ml-auto mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-3">
+                        `   <ul class="divide-y divide-gray-200">`
+                                <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                 <div class="ml-4 flex-shrink-0">
                                     <a href="{{ doc.photo.url }}" download class="font-medium text-indigo-600 hover:text-indigo-500">
                                     Download
@@ -53,12 +58,17 @@
                 <dt class="text-sm font-medium text-gray-500">
                         Pan Card
                         </dt>
-                        <dd class="ml-auto mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
+                        <dd class="ml-auto mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-3">
+                        <ul class="divide-y divide-gray-200">
                             <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
-                                <div class=" flex-1 flex items-center">
+                                <div class="mr-auto flex-1 flex items-center">
                                     <img class="ml-auto w-12 h-40 bg-gray-300 flex-shrink-0" src="{{ docs.pan_card.url }}" alt="">
-                                </div>
+                                </div> </li> 
+                                </ul>
+                                </dd>
+                        <dd class="ml-auto mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-3">
+                        `   <ul class="divide-y divide-gray-200">`
+                                <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                 <div class="ml-4 flex-shrink-0">
                                     <a href="{{ doc.pan_card.url }}" download class="font-medium text-indigo-600 hover:text-indigo-500">
                                     Download

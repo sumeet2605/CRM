@@ -124,14 +124,10 @@
         {% if document.exists %} 
            
             {% for d in document %}
-                 <a href="{% url 'docs:doc-detail' d.pk %}" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">View Documents</a>
-                
-                
+                 <a href="{% url 'docs:doc-detail' d.pk %}" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">View Documents</a>        
             {% endfor %}
-                
         {% else %}
-            <a href="{% url 'sales:documents-update' lead.pk %}" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Add Documents</a>
-            
+            <a href="{% url 'sales:documents-update' lead.pk %}" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Add Documents</a>    
         {% endif %}   
     </div>
   </section>
