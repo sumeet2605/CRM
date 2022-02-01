@@ -66,7 +66,7 @@ class Card2CardCreateView(LoginRequiredMixin, generic.CreateView):
     form_class = Card2CardForm  
 
     def get_success_url(self):
-        return reverse("docs:doc-detail")
+        return reverse("sales:sale-list")
 
     def form_valid(self, form):
         doc = Document.objects.get(pk=self.kwargs["pk"])
