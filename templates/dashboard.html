@@ -50,11 +50,13 @@
             <h2 class="title-font sm:text-xl text-xl mb-4 font-medium text-gray-900">Agent Wise Leads</h2>
             <div class="flex flex-wrap -m-4 text-center">
             {% for agent, value in agent_lead.items %}
+                {% if value != 0 %}
                 <div class="p-4 md:w-1/3 sm:w-1/2 w-full">
                 <div class="border-2 border-gray-200 px-4 py-6 rounded-lg">
                 <h2 class="title-font font-medium text-3xl text-gray-900">{{ value }}</h2>
-                <p class="leading-relaxed">Leads by {{ agent }}</p>
+                <p class="leading-relaxed">Leads by {{ agent.user.first_name }} {{ agent.user.last_name }}</p>
                 </div>
+                {% endif %} 
             </div>
             {% endfor %}
         </div>
