@@ -78,7 +78,13 @@ class Lead(models.Model):
     )
 
     BANKNAME = (
-        ('HDFC', 'HDFC BANK'),('Kotak', 'Kotak Bank'),('SBI', 'SBI Bank'),('Yes', 'Yes Bank'),('CITI', 'CITI Bank'), ('TATA', 'Tata Capital'),
+        ('HDFC', 'HDFC BANK'),
+        ('Kotak', 'Kotak Bank'),
+        ('SBI', 'SBI Bank'),
+        ('Yes', 'Yes Bank'),
+        ('CITI', 'CITI Bank'),
+        ('TATA', 'Tata Capital'),
+        ('IndusInd', 'IndusInd Bank')
     )
 
     
