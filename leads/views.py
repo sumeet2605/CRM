@@ -1,4 +1,5 @@
 import logging
+from sre_parse import CATEGORIES
 from django.utils import timezone
 import datetime
 from django import contrib
@@ -57,6 +58,14 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
         card_out_category = SaleCategory.objects.get(name="Card Out")
         lead=Lead.objects.all()
         sale=Sale.objects.all()
+        categories = Category.objects.all()
+        salecategories = SaleCategory.objects.all()
+        lead_category = {}
+        sale_category = {}
+        agent_lead = {}
+        
+        agent_sale = {}
+        
         # How many leads we have in total
         if user.is_admin:
             
@@ -64,8 +73,18 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
             total_sale_count = sale.count()
             total_lead_count_today = lead.filter(Created_at=datetime.date.today()).count() 
             total_sale_count_today = sale.filter(Created_at=datetime.date.today()).count()
+            for c in categories:
+                lead_category[c] = lead.filter(category=c).count()
+            for c in salecategories:
+                sale_category[c] = sale.filter(category=c).count()
             # How many new leads in the last 30 days
-            
+            agents = Agent.objects.all()
+            for a in agents:
+                agent_lead[a] = lead.filter(agent=a).count()
+            for a in agents:
+                agent_sale[a] = lead.filter(agent=a).count()
+
+
             total_in_past30 = lead.filter(
                 Created_at__gte=thirty_days_ago
             ).count()
@@ -95,8 +114,16 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
             total_sale_count_today = sale.filter(
                 oraganisation=user.userprofile,
                 Created_at=datetime.date.today()).count()
+            for c in categories:
+                lead_category[c] = lead.filter(category=c, oraganisation=user.userprofile).count()
+            for c in salecategories:
+                sale_category[c] = sale.filter(category=c, oraganisation=user.userprofile).count()
             # How many new leads in the last 30 days
-            
+            agents = Agent.objects.filter(oraganisation=user.userprofile)
+            for a in agents:
+                agent_lead[a] = lead.filter(agent=a).count()
+            for a in agents:
+                agent_sale[a] = lead.filter(agent=a).count()
             total_in_past30 = lead.filter(
                 oraganisation=user.userprofile,
                 Created_at__gte=thirty_days_ago
@@ -130,6 +157,11 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
             total_sale_count_today = sale.filter(
                 agent__user=user,
                 Created_at=datetime.date.today()).count()
+
+            for c in categories:
+                lead_category[c] = lead.filter(category=c, agent__user=user).count()
+            for c in salecategories:
+                sale_category[c] = sale.filter(category=c, agent__user=user).count()
             # How many new leads in the last 30 days
             
             total_in_past30 = lead.filter(
@@ -165,6 +197,10 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
             "card_out_in_past30": card_out_in_past30,
             "total_lead_count_today": total_lead_count_today,
             "total_sale_count_today": total_sale_count_today,
+            "lead_category": lead_category,
+            "sale_category": sale_category,
+            "agent_lead": agent_lead,
+            "agent_sale": agent_sale
             
         })
         return context
@@ -408,7 +444,7 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
         if user.is_admin:
             queryset = Lead.objects.all()
         elif user.is_organiser:
-            queryset = Lead.objects.filter(organisation=user.userprofile)
+            queryset = Lead.objects.filter(oraganisation=user.userprofile)
         else:
             queryset = Lead.objects.all()
             # filter for the agent that is logged in
