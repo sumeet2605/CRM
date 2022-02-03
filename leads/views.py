@@ -82,7 +82,7 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
             for a in agents:
                 agent_lead[a] = lead.filter(agent=a).count()
             for a in agents:
-                agent_sale[a] = lead.filter(agent=a).count()
+                agent_sale[a] = sale.filter(agent=a).count()
 
 
             total_in_past30 = lead.filter(
@@ -123,7 +123,7 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
             for a in agents:
                 agent_lead[a] = lead.filter(agent=a).count()
             for a in agents:
-                agent_sale[a] = lead.filter(agent=a).count()
+                agent_sale[a] = sale.filter(agent=a).count()
             total_in_past30 = lead.filter(
                 oraganisation=user.userprofile,
                 Created_at__gte=thirty_days_ago
