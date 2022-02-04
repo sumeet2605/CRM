@@ -37,6 +37,7 @@ class User(AbstractUser):
         ('HOD', 'Head Of Department'),
     ))
     manager = models.ForeignKey("User", on_delete=models.SET_NULL, null=True)
+    profile_picture = models.ImageField(null=True, blank=True, upload_to="profile_pictures/")
 
 
 class UserProfile(models.Model):

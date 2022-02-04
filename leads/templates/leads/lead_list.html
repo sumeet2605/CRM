@@ -151,19 +151,19 @@
             <td class="px-6 py-4 align-center whitespace-nowrap text-center text-sm font-medium text-gray-900" >
             <a class="text-blue-500 hover:text-blue-800" href="{% url 'leads:lead-detail' lead.pk %}">{{ lead.First_Name }} {{ lead.Last_Name }}</a>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">
             {{ lead.Phone_Number }}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">
             {{ lead.Bank_Name }}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
-            {{ lead.agent }}
+            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">
+            {{ lead.agent.user.first_name }} {{ lead.agent.user.last_name }}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">
             {{ lead.Created_at }}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap">
+            <td class="px-6 py-4 whitespace-nowrap text-center">
             {% if lead.category %}
             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
             {{ lead.category.name }}

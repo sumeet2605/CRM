@@ -110,7 +110,7 @@
 {% block content %}
 
 <section class="text-gray-700 body-font">
-    <div class="container px-5 py-24 mx-auto flex flex-wrap">
+    <div class="container px-5 py-4 mx-auto flex flex-wrap">
         <div class="w-full mb-6 py-6 flex justify-between items-center border-b border-gray-200">
             <div>
                 <h1 class="text-4xl text-gray-800">Sales</h1>
@@ -144,16 +144,16 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium text-gray-900">
                                     <a class="text-blue-500 hover:text-blue-800" href="{% url 'sales:sale-detail' sale.pk %}">{{ sale.First_Name }} {{ sale.Last_Name }}</a>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">
                                     {{ sale.PAN_Number }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">
                                     {{ sale.Bank_Name }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">
                                     {{ sale.Phone_Number }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
                                     {% if sale.category %}
                                         <span class="ml-2 px-2 inline-flex whitespace-nowrap text-center text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 align-center">
                                             {{ sale.category.name }}

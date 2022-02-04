@@ -95,11 +95,11 @@
                 </div>
                 <div class="flex border-t border-gray-300 py-2">
                     <span class="text-gray-500">Agent</span>
-                    <span class="ml-auto text-gray-900">{{ lead.agent }}</span>
+                    <span class="ml-auto text-gray-900">{{ lead.agent.user.first_name }} {{ lead.agent.user.last_name }}</span>
                 </div>
                 <div class="flex border-t border-gray-300 py-2">
                     <span class="text-gray-500">Last Update</span>
-                    <span class="ml-auto text-gray-900">{{ lead.updated_by }}</span>
+                    <span class="ml-auto text-gray-900">{{ lead.updated_by.user.first_name }} {{ lead.updated_by.user.last_name }}</span>
                 </div>
                 <div class="flex border-t border-gray-300 py-2">
                     <span class="text-gray-500">Remarks</span>

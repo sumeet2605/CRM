@@ -66,7 +66,7 @@ class AgentCreateView(OraganiserAndLoginRequiredMixin, generic.CreateView):
         )
         send_mail(
             subject="You are invited to be an agent for Rizvitak Consulting India Pvt. Ltd.",
-            message="You were added as an agent on RIZCRM, please login to start working.",
+            message="You were added as an agent on RIZCRM, please login to start working. www.rizvitak.com/crm ",
             from_email="admin@rizvitak.com",
             recipient_list=[user.email]
         )
@@ -90,13 +90,7 @@ class AgentUpdateView(OraganiserAndLoginRequiredMixin, generic.UpdateView):
     def get_success_url(self):
         return reverse("agents:agent-list")    
 
-    def form_valid(self, form):
-        form.save()
-        return super(AgentUpdateView, self).form_valid(form)
-
     
-
-
 class AgentDeleteView(OraganiserAndLoginRequiredMixin, generic.DeleteView):
     template_name = "agents/agent_delete.html"
     

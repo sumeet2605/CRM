@@ -15,6 +15,7 @@ class AgentModelForm(forms.ModelForm):
             'department',
             'user_type',
             'manager',
-            'user_role'
+            'user_role',
+            'profile_picture'
         )
         
