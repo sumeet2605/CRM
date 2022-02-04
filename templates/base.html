@@ -7,8 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rizvitak Consulting India Pvt. Ltd.</title>
     <link href="{% static 'css/styles.css' %}" rel="stylesheet"> 
+    {% block head %}
+    {% endblock head %}
 </head>
-<body>
+<body class="bg-gray-100 text-gray-900 tracking-wider leading-normal">
     <div class="max-w-7xl mx-auto">
         {% include 'navbar.html' %}
         {% include 'messages.html' %}

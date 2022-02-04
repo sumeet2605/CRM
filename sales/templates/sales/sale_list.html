@@ -1,5 +1,112 @@
 {% extends "base.html" %}
+{% block head %}
 
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel=" stylesheet">
+  <!--Replace with your tailwind.css once created-->
+
+
+  <!--Regular Datatables CSS-->
+  <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+  <!--Responsive Extension Datatables CSS-->
+  <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+
+  <style>
+    /*Overrides for Tailwind CSS */
+
+    /*Form fields*/
+    .dataTables_wrapper select,
+    .dataTables_wrapper .dataTables_filter input {
+      color: #4a5568;
+      /*text-gray-700*/
+      padding-left: 1rem;
+      /*pl-4*/
+      padding-right: 1rem;
+      /*pl-4*/
+      padding-top: .5rem;
+      /*pl-2*/
+      padding-bottom: .5rem;
+      /*pl-2*/
+      line-height: 1.25;
+      /*leading-tight*/
+      border-width: 2px;
+      /*border-2*/
+      border-radius: .25rem;
+      border-color: #edf2f7;
+      /*border-gray-200*/
+      background-color: #edf2f7;
+      /*bg-gray-200*/
+    }
+
+    /*Row Hover*/
+    table.dataTable.hover tbody tr:hover,
+    table.dataTable.display tbody tr:hover {
+      background-color: #ebf4ff;
+      /*bg-indigo-100*/
+    }
+
+    /*Pagination Buttons*/
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+      font-weight: 700;
+      /*font-bold*/
+      border-radius: .25rem;
+      /*rounded*/
+      border: 1px solid transparent;
+      /*border border-transparent*/
+    }
+
+    /*Pagination Buttons - Current selected */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+      color: #fff !important;
+      /*text-white*/
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
+      /*shadow*/
+      font-weight: 700;
+      /*font-bold*/
+      border-radius: .25rem;
+      /*rounded*/
+      background: #667eea !important;
+      /*bg-indigo-500*/
+      border: 1px solid transparent;
+      /*border border-transparent*/
+    }
+
+    /*Pagination Buttons - Hover */
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+      color: #fff !important;
+      /*text-white*/
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
+      /*shadow*/
+      font-weight: 700;
+      /*font-bold*/
+      border-radius: .25rem;
+      /*rounded*/
+      background: #667eea !important;
+      /*bg-indigo-500*/
+      border: 1px solid transparent;
+      /*border border-transparent*/
+    }
+
+    /*Add padding to bottom border */
+    table.dataTable.no-footer {
+      border-bottom: 1px solid #e2e8f0;
+      /*border-b-1 border-gray-300*/
+      margin-top: 0.75em;
+      margin-bottom: 0.75em;
+    }
+
+    /*Change colour of responsive icon*/
+    table.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child:before,
+    table.dataTable.dtr-inline.collapsed>tbody>tr>th:first-child:before {
+      background-color: #667eea !important;
+      /*bg-indigo-500*/
+    }
+  </style>
+{% endblock head %}
 {% block content %}
 
 <section class="text-gray-700 body-font">
@@ -17,54 +124,38 @@
         <div class="flex flex-col w-full">
             <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            First Name
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Last Name
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Pan Number
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Email
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Cell Phone Number
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Category
-                            </th>
-                            <th scope="col" class="relative px-6 py-3">
-                            <span class="sr-only">Edit</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for sale in sales %}
+        
+        <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+        <div id='recipients' class="p-3 mt-1 lg:mt-0 rounded shadow bg-white">
+      <table id="example" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+        <thead>
+          <tr>
+            <th data-priority="1">Name</th>
+            <th data-priority="2">Pan Number</th>
+            <th data-priority="3">Bank</th>
+            <th data-priority="4">Phone Number</th>
+            <th data-priority="5">Category</th>
+            <th data-priority="6">Last Updated</th>  
+            </tr>
+        </thead>
+        <tbody>
+          {% for sale in sales %}
                             <tr class="bg-white">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    <a class="text-blue-500 hover:text-blue-800" href="{% url 'sales:sale-detail' sale.pk %}">{{ sale.First_Name }}</a>
+                                <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium text-gray-900">
+                                    <a class="text-blue-500 hover:text-blue-800" href="{% url 'sales:sale-detail' sale.pk %}">{{ sale.First_Name }} {{ sale.Last_Name }}</a>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ sale.Last_Name }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
                                     {{ sale.PAN_Number }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ sale.Personal_Email }}
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                    {{ sale.Bank_Name }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
                                     {{ sale.Phone_Number }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {% if sale.category %}
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        <span class="ml-2 px-2 inline-flex whitespace-nowrap text-center text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 align-center">
                                             {{ sale.category.name }}
                                         </span>
                                     {% else %}
@@ -76,7 +167,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     {% if sale.category.name != "Card Out" or sale.category.name != "Declined" or sale.category.name != "Logged in" %}
                                     <a href="{% url 'sales:sale-update' sale.pk %}" class="text-indigo-600 hover:text-indigo-900">
-                                        Edit
+                                        {{ sale.Last_Upated }}
                                     </a>
                                     {% endif %}
                                 </td>
@@ -87,45 +178,41 @@
                         <p>There are currently no sales</p>
 
                         {% endfor %}
-                    </tbody>
-                </table>
-                </div>
-            </div>
-            </div>
-        </div>
-  
-        {% if unassigned_sales.exists %}
-            <div class="mt-5 flex flex-wrap -m-4">
-                <div class="p-4 w-full">
-                    <h1 class="text-4xl text-gray-800">Unassigned Sales</h1>
-                </div>
-                {% for sale in unassigned_sales %}
-                <div class="p-4 lg:w-1/2 md:w-full">
-                    <div class="flex border-2 rounded-lg border-gray-200 p-8 sm:flex-row flex-col">
-                        <div class="w-16 h-16 sm:mr-8 sm:mb-0 mb-4 inline-flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 flex-shrink-0">
-                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-8 h-8" viewBox="0 0 24 24">
-                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                            </svg>
-                        </div>
-                        <div class="flex-grow">
-                            <h2 class="text-gray-900 text-lg title-font font-medium mb-3">
-                                {{ sale.first_name }} {{ sale.last_name }}
-                            </h2>
-                            <p class="leading-relaxed text-base">
-                                {{ lead.description }}
-                            </p>
-                            <a href="{% url 'leads:assign-agent' lead.pk %}" class="mt-3 text-indigo-500 inline-flex items-center">
-                                Assign an agent
-                                <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
-                                    <path d="M5 12h14M12 5l7 7-7 7"></path>
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+          <!-- Rest of your data (refer to https://datatables.net/examples/server_side/ for server side processing)-->
+          </tbody>
+    </table>
+
+
+    </div>
+    <!--/Card-->
+
+
+  </div>
+  <!--/container-->
+
+
+
+
+
+  <!-- jQuery -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+  <!--Datatables -->
+  <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+  <script>
+    $(document).ready(function() {
+
+      var table = $('#example').DataTable({
+          responsive: true
+        })
+        .columns.adjust()
+        .responsive.recalc();
+    });
+  </script>
+            
+        
     </div>
 </section>
+                  
 {% endblock content %}
