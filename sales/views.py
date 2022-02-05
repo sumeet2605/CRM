@@ -230,7 +230,7 @@ class SaleCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
         if user.is_admin:
             queryset = Sale.objects.all()
         elif user.is_organiser:
-            queryset = Sale.objects.filter(organisation=user.userprofile)
+            queryset = Sale.objects.filter(oraganisation=user.userprofile)
         else:
             queryset = Sale.objects.all()
             # filter for the agent that is logged in
