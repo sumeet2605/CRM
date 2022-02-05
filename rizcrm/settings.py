@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import environ
 from pathlib import Path
+import os
 
 env = environ.Env(
     DEBUG=(bool, False)
@@ -145,7 +146,7 @@ STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 STATIC_ROOT = "static_root"
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
