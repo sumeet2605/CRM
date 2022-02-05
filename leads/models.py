@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.db import models
 from django.db.models.signals import post_save
 from django.contrib.auth.models import AbstractUser
+from rizcrm.storage_backends import PublicMediaStorage
 
 
 # Create your models here.
@@ -37,7 +38,7 @@ class User(AbstractUser):
         ('HOD', 'Head Of Department'),
     ))
     manager = models.ForeignKey("User", on_delete=models.SET_NULL, null=True)
-    profile_picture = models.ImageField(null=True, blank=True, upload_to="profile_pictures/")
+    profile_picture = models.ImageField(null=True, blank=True, storage=PublicMediaStorage())
 
 
 class UserProfile(models.Model):
@@ -180,6 +181,7 @@ class Sale(models.Model):
 
 
 def handle_upload_documents(instance, filename):
+        storage = PublicMediaStorage
         return f"sale_documents/sale_{instance.sale.pk}/{filename}"
 
 class Document(models.Model):
@@ -193,6 +195,7 @@ class Document(models.Model):
         return f"{self.sale.First_Name} {self.sale.Last_Name}"
 
 def handle_upload_kyc(instance, filename):
+        storage = PublicMediaStorage()
         return f"sale_documents/sale_{instance.document.sale.pk}/{filename}"
     
 class KYCDocument(models.Model):
