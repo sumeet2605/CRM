@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     "crispy_tailwind",
     'tailwind',
     'theme',
-    'storages'
+    'storages',
 
     # Local apps
     'leads',
@@ -160,7 +160,7 @@ if USE_SPACES:
     AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
     PUBLIC_MEDIA_LOCATION = 'media'
     MEDIA_URL = f'https://{AWS_S3_ENDPOINT_URL}/{PUBLIC_MEDIA_LOCATION}/'
-    DEFAULT_FILE_STORAGE = 'hello_django.storage_backends.PublicMediaStorage'
+    DEFAULT_FILE_STORAGE = 'rizcrm.storage_backends.PublicMediaStorage'
     
 else:
     MEDIA_URL = '/media/'
