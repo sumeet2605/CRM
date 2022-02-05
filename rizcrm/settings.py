@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "crispy_tailwind",
     'tailwind',
     'theme',
+    'storages'
 
     # Local apps
     'leads',
@@ -142,13 +143,30 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "static"
-]
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(os.getcwd(), 'media/')
 STATIC_ROOT = "static_root"
+STATICFILES_DIRS = [
+        BASE_DIR / "static"
+    ]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+USE_SPACES = env("USE_SPACES") == 'TRUE'
+
+if USE_SPACES:
+    AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+    AWS_DEFAULT_ACL = 'public-read'
+    AWS_S3_ENDPOINT_URL = 'https://rizcrm.sgp1.digitaloceanspaces.com'
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+    PUBLIC_MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'https://{AWS_S3_ENDPOINT_URL}/{PUBLIC_MEDIA_LOCATION}/'
+    DEFAULT_FILE_STORAGE = 'hello_django.storage_backends.PublicMediaStorage'
+    
+else:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = "media_root"
+    
+
 
 
 # Default primary key field type
