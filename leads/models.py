@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from distutils.command.upload import upload
 import pytz
 from django.utils import timezone
 from django.db import models
@@ -38,7 +39,7 @@ class User(AbstractUser):
         ('HOD', 'Head Of Department'),
     ))
     manager = models.ForeignKey("User", on_delete=models.SET_NULL, null=True)
-    profile_picture = models.ImageField(null=True, blank=True, storage=PublicMediaStorage())
+    profile_picture = models.ImageField(null=True, blank=True, upload_to="profile_pictures/")
 
 
 class UserProfile(models.Model):
@@ -181,7 +182,6 @@ class Sale(models.Model):
 
 
 def handle_upload_documents(instance, filename):
-        storage = PublicMediaStorage
         return f"sale_documents/sale_{instance.sale.pk}/{filename}"
 
 class Document(models.Model):
@@ -195,7 +195,7 @@ class Document(models.Model):
         return f"{self.sale.First_Name} {self.sale.Last_Name}"
 
 def handle_upload_kyc(instance, filename):
-        storage = PublicMediaStorage()
+        
         return f"sale_documents/sale_{instance.document.sale.pk}/{filename}"
     
 class KYCDocument(models.Model):
